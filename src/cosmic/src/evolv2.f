@@ -2406,7 +2406,7 @@ component.
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
      &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,
-     &               deltam1_bcm,deltam2_bcm)
+     &               deltam1_bcm,deltam2_bcm,z)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
      &      kstar(j1).eq.13)then !PK.
 * In CE the NS got switched around. Do same to formation.
@@ -3981,7 +3981,7 @@ component.
      &               bhspin(j1),bhspin(j2),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
      &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,
-     &               deltam1_bcm,deltam2_bcm)
+     &               deltam1_bcm,deltam2_bcm,z)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -4065,7 +4065,7 @@ component.
      &               bhspin(j2),bhspin(j1),binstate,mergertype,
      &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
      &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,
-     &               deltam1_bcm,deltam2_bcm)
+     &               deltam1_bcm,deltam2_bcm,z)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
      & mass(j1),mass(j2)
          if(j2.eq.2.and.kcomp1.eq.13.and.kstar(j1).eq.15.and.

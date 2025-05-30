@@ -846,6 +846,107 @@
       return
       end
 ***
+
+      real*8 FUNCTION tonset(tmin,z)
+      implicit none
+      real*8 tmin,z
+*
+* A function to evaluate Tonset (TB xx/02/2025)
+*       from Mandel, Hirai & Picker 2024
+*
+      tonset = tmin /min(0.695d0-0.057d0*log10(z),0.95d0)
+
+      return
+      end
+***
+      real*8 FUNCTION mifmcf(z)
+      implicit none
+      real*8 z
+*
+* A function to evaluate the ratio Minter,f/Mcore,f (TB xx/02/2025)
+*       from Picker, Hirai & Mandel 2024
+*
+      mifmcf = -0.023*log10(z)-0.0023
+
+      return
+      end
+***
+      real*8 FUNCTION menvmax(kw,m,z)
+      implicit none
+      integer kw
+      real*8 m,z
+      real*8 mcagbf,mifmcf
+      external mcagbf,mifmcf
+*
+* A function to evaluate the maximum mass of the convective envelope (TB xx/02/2025)
+*       from Picker, Hirai & Mandel 2024
+*
+* I'm not sure how HG stars should be treated ...
+*
+      if(kw.ge.10)then
+              menvmax = 0.0d0
+      elseif(kw.lt.2)then
+              if(m.gt.1.25d0)then
+                      menvmax = 0.0d0
+              else
+                      menvmax = m
+                      if(m.gt.0.35d0)then
+                              menvmax = 0.35d0*(1.25d0-m)*(1.25d0-m)/0.81d0
+                      endif
+              endif
+      else
+              menvmax = max(m-mcagbf(m)*(1.0d0+mifmcf(z)), 0.0d0)
+      endif
+      return
+      end
+***
+      real*8 FUNCTION mconvenv(kw,m,z,teff,teagb,ton,aj,tm)
+      implicit none
+      integer kw
+      real*8 m,z,teff,aj,tm,mcco,mhefl,GB(10)
+      real*8 teagb,ton
+      real*8 menvmax,tmin,tonset
+      external menvmax,tmin,tonset
+*
+* A function to evaluate the mass of the convective envelope (TB xx/02/2025)
+*       from Picker, Hirai & Mandel 2024
+*
+      if(kw.ge.10)then
+              mconvenv = 0.0d0
+      elseif(kw.lt.2)then
+              if(m.gt.1.25d0)then
+                      mconvenv = 0.0d0
+              else
+                      mconvenv = menvmax(kw,m,z)*sqrt(sqrt(1.0d0-aj/tm))
+              endif
+      else
+              mconvenv = menvmax(kw,m,z)/(1.0d0+exp(4.6d0*
+     &             (teagb+ton-2.0d0*teff)/(teagb-ton)))
+      endif
+
+      return
+      end
+***
+      real*8 FUNCTION celamhe(m,z,mconv,mconvmax)
+      implicit none
+      real*8 m,z,mconv,mconvmax
+      real*8 m2,b1
+*
+* A function to evaluate the binding energy factor of the convective envelope (TB xx/02/2025)
+*       from Picker, Hirai & Mandel 2024
+*
+      m2 = 0.0023d0*log10(z)**2+0.0088d0*log10(z)+0.013d0
+      b1 = m2*m-0.23d0
+      if((mconv/mconvmax).gt.0.3d0)then
+              celamhe = exp(0.42*(mconv/mconvmax)+b1)
+      else
+              celamhe = exp(0.3*0.42+b1)
+      endif
+
+      return
+      end
+***
+
       real*8 FUNCTION lHeIf(m,mhefl)
       implicit none
       real*8 m,mhefl,a(200)

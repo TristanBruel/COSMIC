@@ -91,7 +91,7 @@ if sys.version_info.major == 2 and sys.version_info.minor == 7:
 else:
     INITIAL_CONDITIONS_PASS_COLUMNS = initialbinarytable.INITIAL_CONDITIONS_COLUMNS.copy()
 
-INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf',
+INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf', 'ce2stageflag',
                                   'ceflag', 'tflag', 'ifflag', 'wdflag', 'pisn', 'rtmsflag',
                                   'bhflag', 'remnantflag', 'grflag', 'bhms_coll_flag', 'wd_mass_lim',
                                   'cekickflag', 'cemergeflag', 'cehestarflag',
@@ -459,6 +459,7 @@ def _evolve_single_system(f):
         _evolvebin.windvars.hewind = f["hewind"]
         _evolvebin.cevars.alpha1 = f["alpha1"]
         _evolvebin.cevars.lambdaf = f["lambdaf"]
+        _evolvebin.ceflags.ce2stageflag = f["ce2stageflag"]
         _evolvebin.ceflags.ceflag = f["ceflag"]
         _evolvebin.flags.tflag = f["tflag"]
         _evolvebin.flags.ifflag = f["ifflag"]

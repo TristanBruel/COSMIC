@@ -6,7 +6,7 @@
      &                  bhspin1,bhspin2,binstate,mergertype,
      &                  jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
      &                  lumin,B_0,bacc,tacc,epoch,menv_bpp,renv_bpp,
-     &                  bkick,deltam_1,deltam_2)
+     &                  bkick,deltam_1,deltam_2,z)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -75,6 +75,15 @@
       REAL*8 KW1_TEMP, KW2_TEMP
       REAL*8 rad(2),tms(2),lumin(2),B_0(2),bacc(2),tacc(2),epoch(2)
       REAL*8 menv_bpp(2),renv_bpp(2)
+
+      REAL*8 mconvmax1,mconv1,tmin1,tonset1
+      REAL*8 mconvmax2,mconv2,tmin2,tonset2
+      REAL*8 ragbf,menvmax,mconvenv,celamhe,tonset
+      EXTERNAL ragbf,menvmax,mconvenv,celamhe,tonset
+      REAL*8 mcgbtf,lmcgbf
+      EXTERNAL mcgbtf,lmcgbf
+      REAL*8 z,m1endstage1,m2endstage1,reagb
+
 *
 * Initialize
 *
@@ -100,68 +109,217 @@
       COEL = .FALSE.
       snp = 0
       output = .false.
+
+*
+* In the case of 2-stage formalism (Hirai & Mandel 2022)
+*
+      IF(CE2STAGEFLAG.EQ.1)THEN
+         KW = KW1
+         CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+         CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
+     &           R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
+     &           bhspin1,star1)
+         OSPIN1 = JSPIN1/(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
+         if(switchedCE)then
+            teff1 = 1000.d0*((1130.d0*lumin(2)/
+     &           (rad2_bpp**2.d0))**(1.d0/4.d0))
+         else
+            teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &           (rad1_bpp**2.d0))**(1.d0/4.d0))
+         endif
+         reagb = ragbf(M1,LUMS(7),zpars(2))
+         tmin1 = 1000.d0*((1130.d0*LUMS(7)/(reagb**2.d0))**(1.d0/4.d0))
+         tonset1 = tonset(tmin1,z)
+         mconvmax1 = menvmax(KW,M1,z)
+         mconv1 = mconvenv(KW,M1,z,teff1,tmin1,tonset1,AJ1,TM1)
+* if mass > 8 Msun, the mass of the envelope participating in the first stage is the mass of the convective one
+* if mass < 2 Msun, the entire envelope participates in the first stage
+* linear interpolation in between
+         IF(M1.GE.8.0d0)THEN
+            m1endstage1 = M1-mconv1
+         ELSEIF(M1.LT.2.0d0)THEN
+            m1endstage1 = MC1
+         ELSE
+            m1endstage1 = MC1 + (MENV-MC1 - mconv1) * (M1-2.0d0) /6.0d0
+         ENDIF
+
+         KW = KW2
+         CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
+         CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
+     &           R2,L2,KW2,MC2,RC2,MENV,RENV,K22,
+     &           bhspin2,star2)
+         OSPIN2 = JSPIN2/(K22*R2*R2*(M2-MC2)+K3*RC2*RC2*MC2)
+         if(switchedCE)then
+            teff2 = 1000.d0*((1130.d0*lumin(1)/
+     &           (rad1_bpp**2.d0))**(1.d0/4.d0))
+         else
+            teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &           (rad2_bpp**2.d0))**(1.d0/4.d0))
+         endif
+         reagb = ragbf(M2,LUMS(7),zpars(2))
+         tmin2 = 1000.d0*((1130.d0*LUMS(7)/(reagb**2.d0))**(1.d0/4.d0))
+         tonset2 = tonset(tmin2,z)
+         mconvmax2 = menvmax(KW,M2,z)
+         mconv2 = mconvenv(KW,M2,z,teff2,tmin2,tonset2,AJ2,TM2)
+* if mass > 8 Msun, the mass of the envelope participating in the first stage is the mass of the convective one
+* if mass < 2 Msun, the entire envelope participates in the first stage
+* linear interpolation in between
+         IF(KW2.LE.1.OR.KW2.EQ.7)THEN
+            IF(M2.GE.8.0d0)THEN
+               m2endstage1 = M2-mconv2
+            ELSEIF(M2.LT.2.0d0)THEN
+               m2endstage1 = M2
+            ELSE
+               m2endstage1 = M2 - mconv2 * (M2-2.0d0) /6.0d0
+            ENDIF
+         ELSE
+            IF(M2.GE.8.0d0)THEN
+               m2endstage1 = M2-mconv2
+            ELSEIF(M2.LT.2.0d0)THEN
+               m2endstage1 = MC2
+            ELSE
+               m2endstage1 = MC2 + (M2-MC2-mconv2) * (M2-2.0d0) /6.0d0
+            ENDIF
+         ENDIF
+
+*       Compute LAMBDA_HE from Picker, Hirai & Mandel 2024
+         LAMB1 = celamhe(M1,z,mconv1,mconvmax1)
+         LAMB2 = celamhe(M2,z,mconv2,mconvmax2)
+*
+* Calculate the binding energy of the giant envelope (multiplied by lambda).
+*
+         EBINDI = M1*(M1-m1endstage1)/(LAMB1*R1)
+*
+* If the secondary star is also giant-like add its envelopes energy.
+*
+         IF(KW2.GE.2.AND.KW2.LE.9.AND.KW2.NE.7)THEN
+            EBINDI = EBINDI + M2*(M2-m2endstage1)/(LAMB2*R2)
+         ENDIF
+*
+* Calculate the initial orbital energy
+*
+         EORBI = M1*M2/(2.D0*SEP)
+         if(output) write(*,*)'Init CE:',
+     &           M01,M1,R1,M02,M2,R2,EBINDI,EORBI
+*
+* Allow for an eccentric orbit.
+*
+         ECIRC = EORBI/(1.D0 - ECC*ECC)
+*
+* Calculate the final orbital energy without coalescence.
+*
+         EORBF = EORBI + EBINDI/ALPHA1
+         SEPF = m1endstage1*m2endstage1/(2.D0*EORBF)
+
+         print*, 'Tmin 1', tmin1
+         print*, 'Tonset 1', tonset1
+         print*, 'Teff 1', teff1
+         print*, 'Max convective envelope mass 1', mconvmax1
+         print*, 'Mass of the convective envelope 1', mconv1
+         print*, 'Mass 1 after 1st stage', m1endstage1
+         print*, 'Tmin 2', tmin2
+         print*, 'Tonset 2', tonset2
+         print*, 'Teff 2', teff2
+         print*, 'Max convective envelope mass 2', mconvmax2
+         print*, 'Mass of the convective envelope 2', mconv2
+         print*, 'Mass 2 after 1st stage', m2endstage1
+         print*, 'Separation after 1st stage', SEPF
+*
+* Second stage: stable mass transfer of the radiative intershell
+*
+*** THIS NEEDS TO BE UPDATED WITH A CORRECT DESCRIPTION OF MASS TRANSFER ***
+         IF(m1endstage1.GT.MC1)THEN
+            SEPF = SEPF*((m1endstage1+m2endstage1)/(MC1+m2endstage1))
+     &          *(m1endstage1/MC1)**2
+     &          *EXP(-2*(m1endstage1-MC1)/m2endstage1)
+         ENDIF
+         EORBF = MC1*m2endstage1/(2.D0*SEPF)
+         Q1 = MC1/m2endstage1
+         Q2 = 1.D0/Q1
+         RL1 = RL(Q1)
+         RL2 = RL(Q2)
+         print*, 'Separation after 2nd stage', SEPF
+
+      ELSE
+* 
+* Standard energy formalism
+*
 *
 * Obtain the core masses and radii.
 *
-      KW = KW1
-      CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
-      CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
+         KW = KW1
+         CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
+         CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &            R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
      &            bhspin1,star1)
-      OSPIN1 = JSPIN1/(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
-      MENVD = MENV/(M1-MC1)
-      RZAMS = RZAMSF(M01)
+         OSPIN1 = JSPIN1/(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
+         MENVD = MENV/(M1-MC1)
+         RZAMS = RZAMSF(M01)
 *
 * Decide which CE prescription to use based on LAMBDA flag
 * MJZ: NOTE - Nanjing lambda prescription DOES NOT WORK!
 *
-      LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDAF)
-      KW = KW2
-      CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
-      CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
+         LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDAF)
+         KW = KW2
+         CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
+         CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &            R2,L2,KW2,MC2,RC2,MENV,RENV,K22,
      &            bhspin2,star2)
-      OSPIN2 = JSPIN2/(K22*R2*R2*(M2-MC2)+K3*RC2*RC2*MC2)
+         OSPIN2 = JSPIN2/(K22*R2*R2*(M2-MC2)+K3*RC2*RC2*MC2)
 *
 * Calculate the binding energy of the giant envelope (multiplied by lambda).
 *
-      EBINDI = M1*(M1-MC1)/(LAMB1*R1)
+         EBINDI = M1*(M1-MC1)/(LAMB1*R1)
 *
 * If the secondary star is also giant-like add its envelopes energy.
 * Determine EORBI based on CEFLAG (CEFLAG=1 for de Kool prescription)
 *
-      IF(KW2.GE.2.AND.KW2.LE.9.AND.KW2.NE.7)THEN
-         MENVD = MENV/(M2-MC2)
-         RZAMS = RZAMSF(M02)
-         LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDAF)
-         EBINDI = EBINDI + M2*(M2-MC2)/(LAMB2*R2)
+         IF(KW2.GE.2.AND.KW2.LE.9.AND.KW2.NE.7)THEN
+            MENVD = MENV/(M2-MC2)
+            RZAMS = RZAMSF(M02)
+            LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDAF)
+            EBINDI = EBINDI + M2*(M2-MC2)/(LAMB2*R2)
 *
 * Calculate the initial orbital energy
 *
-         IF(CEFLAG.EQ.0) EORBI = MC1*MC2/(2.D0*SEP)
-         IF(CEFLAG.EQ.1) EORBI = M1*M2/(2.D0*SEP)
-      ELSE
-         IF(CEFLAG.EQ.0) EORBI = MC1*M2/(2.D0*SEP)
-         IF(CEFLAG.EQ.1) EORBI = M1*M2/(2.D0*SEP)
-      ENDIF
-      if(output) write(*,*)'Init CE:',M01,M1,R1,M02,M2,R2,EBINDI,EORBI
+            IF(CEFLAG.EQ.0) EORBI = MC1*MC2/(2.D0*SEP)
+            IF(CEFLAG.EQ.1) EORBI = M1*M2/(2.D0*SEP)
+         ELSE
+            IF(CEFLAG.EQ.0) EORBI = MC1*M2/(2.D0*SEP)
+            IF(CEFLAG.EQ.1) EORBI = M1*M2/(2.D0*SEP)
+         ENDIF
+         if(output) write(*,*)'Init CE:',M01,M1,R1,M02,M2,R2,EBINDI,EORBI
 *
 * Allow for an eccentric orbit.
 *
-      ECIRC = EORBI/(1.D0 - ECC*ECC)
+         ECIRC = EORBI/(1.D0 - ECC*ECC)
 *
 * Calculate the final orbital energy without coalescence.
 *
-      EORBF = EORBI + EBINDI/ALPHA1
+         EORBF = EORBI + EBINDI/ALPHA1
+*
+* If the secondary is on the main sequence see if it fills its Roche lobe.
+*
+         IF(KW2.LE.1.OR.KW2.EQ.7)THEN
+            SEPF = MC1*M2/(2.D0*EORBF)
+            Q1 = MC1/M2
+            Q2 = 1.D0/Q1
+            RL1 = RL(Q1)
+            RL2 = RL(Q2)
+         ELSE
+            SEPF = MC1*MC2/(2.D0*EORBF)
+            Q1 = MC1/M2
+            Q2 = 1.D0/Q1
+            RL1 = RL(Q1)
+            RL2 = RL(Q2)
+         ENDIF
+
+      ENDIF
+
 *
 * If the secondary is on the main sequence see if it fills its Roche lobe.
 *
       IF(KW2.LE.1.OR.KW2.EQ.7)THEN
-         SEPF = MC1*M2/(2.D0*EORBF)
-         Q1 = MC1/M2
-         Q2 = 1.D0/Q1
-         RL1 = RL(Q1)
-         RL2 = RL(Q2)
 *
 * If cemergeflag is set, cause kstars without clear core-envelope
 * structure to merge automatically if they enter a CE
@@ -373,11 +531,6 @@
 * Degenerate or giant secondary. Check if the least massive core fills its
 * Roche lobe.
 *
-         SEPF = MC1*MC2/(2.D0*EORBF)
-         Q1 = MC1/MC2
-         Q2 = 1.D0/Q1
-         RL1 = RL(Q1)
-         RL2 = RL(Q2)
 *
 * If cemergeflag is set, cause kstars without clear core-envelope
 * structure to merge automatically if they enter a CE
