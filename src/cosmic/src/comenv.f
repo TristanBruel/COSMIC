@@ -274,6 +274,7 @@
 * If the secondary star is also giant-like add its envelopes energy.
 * Determine EORBI based on CEFLAG (CEFLAG=1 for de Kool prescription)
 *
+         EORBI = M1*M2/(2.D0*SEP)
          IF(KW2.GE.2.AND.KW2.LE.9.AND.KW2.NE.7)THEN
             MENVD = MENV/(M2-MC2)
             RZAMS = RZAMSF(M02)
