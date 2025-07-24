@@ -290,6 +290,9 @@ if __name__ == '__main__':
     bpp_filter_match = []
     initC_filter_match = []
 
+    # Set the maximum primary and secondary mass for sampling
+    m_max = args.m_max if hasattr(args, 'm_max') else 150.0
+
     # Warn about qmin and m2_min
     if (hasattr(args, 'qmin')) & (hasattr(args, 'm2_min')):
         warnings.warn(f"You have specified both qmin and m2_min. COSMIC will use qmin={args.qmin} to "
@@ -314,6 +317,7 @@ if __name__ == '__main__':
                                                             final_kstar2 = kstar2_range,
                                                             binfrac_model = args.binfrac_model,
                                                             primary_model = args.primary_model,
+                                                            m_max = m_max,
                                                             ecc_model = args.ecc_model,
                                                             porb_model = args.porb_model,
                                                             keep_singles = args.keep_singles,
@@ -330,6 +334,7 @@ if __name__ == '__main__':
                                                             final_kstar2 = kstar2_range,
                                                             binfrac_model = args.binfrac_model,
                                                             primary_model = args.primary_model,
+                                                            m_max = m_max,
                                                             ecc_model = args.ecc_model,
                                                             porb_model = args.porb_model,
                                                             keep_singles = args.keep_singles,
