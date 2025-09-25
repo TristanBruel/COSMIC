@@ -54,7 +54,8 @@ ALL_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2', 'sep', 'porb',
                'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2', 'omega_spin_1',
                'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2', 'tacc_1',
                'tacc_2', 'epoch_1', 'epoch_2', 'bhspin_1', 'bhspin_2',
-               'deltam_1', 'deltam_2', 'SN_1', 'SN_2', 'bin_state', 'merger_type']
+               'deltam_1', 'deltam_2', 'SN_1', 'SN_2', 'bin_state', 'merger_type',
+               'caseMT_1','caseMT_2']
 
 INTEGER_COLUMNS = ["bin_state", "bin_num", "kstar_1", "kstar_2", "SN_1", "SN_2", "evol_type"]
 
@@ -75,7 +76,7 @@ BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
                'lum_2', 'rad_2', 'teff_2', 'massc_2', 'radc_2', 'menv_2',
                'renv_2', 'epoch_2', 'omega_spin_2', 'deltam_2', 'RRLO_2',
                'porb', 'sep', 'ecc', 'B_1', 'B_2',
-               'SN_1', 'SN_2', 'bin_state', 'merger_type']
+               'SN_1', 'SN_2', 'bin_state', 'merger_type', 'caseMT_1', 'caseMT_2']
 
 KICK_COLUMNS = ['star', 'disrupted', 'natal_kick', 'phi', 'theta', 'mean_anomaly',
                 'delta_vsysx_1', 'delta_vsysy_1', 'delta_vsysz_1', 'vsys_1_total',
