@@ -449,7 +449,8 @@ C      if(mt0.gt.100.d0) mt = 100.d0
          if(mcmax-mcx.lt.tiny)then
             aj = 0.d0
             mc = mcmax
-            call assign_remnant(zpars,mc,mcbagb,mass,mt,kw,bhspin,kidx)
+            call assign_remnant(zpars,mc,mcbagb,mass,mt,kw,bhspin,kidx,
+     &          met)
          endif
 *
       endif
@@ -497,8 +498,9 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                aj = 0.d0
                mc = mcmax
                mcbagb = mass
+               met = 10**(LOG10(zpars(14))/0.4)
                call assign_remnant(zpars,mc,mcbagb,mass,
-     &          mt,kw,bhspin,kidx)
+     &          mt,kw,bhspin,kidx,met)
                
                if(kw.eq.11) mt = MAX(mc,(mc+0.31d0)/1.45d0)
             endif

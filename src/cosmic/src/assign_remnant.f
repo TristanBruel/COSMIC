@@ -1,19 +1,23 @@
 ***
-      SUBROUTINE assign_remnant(zpars,mc,mcbagb,mass,mt,kw,bhspin,kidx)
+      SUBROUTINE assign_remnant(zpars,mc,mcbagb,mass,mt,kw,bhspin,kidx,
+     &                          met)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
       
       common /fall/fallback
       REAL*8 fallback
-      REAL ran3
+      REAL ran3,xx
       EXTERNAL ran3
       real*8 zpars(20)
 
       real*8 avar,bvar
-      real*8 mc,mcbagb,mass,mt
+      real*8 mc,mcbagb,mass,mt,met
       real*8 frac,kappa,sappa,alphap,polyfit
       real*8 mcx, bhspin,mrem,mch
       integer kw,kidx
+      real*8 logz
+      character*1 history
+      real*8 Mco1,Mco2,Mco3,McoNS1,McoNS2
 
       
 * input mc(or mcmax),mass, mcbagb
@@ -231,13 +235,110 @@
                          endif
                      endif
                      mc = mt
+                  elseif(remnantflag.eq.5)then
+*
+* Use the Explodability Criteria from (Maltsev et al. 2025, A&A, 700,A20)
+* with the Remnant Mass Relation from (Ugolini et al. 2025, A&A, 695,A122)
+*
+                     WRITE(*,*)' MCO ',mc
+                     WRITE(*,*)' Metallicity ',met
+*                    Always Neutron Stars
+                     if(mc.lt.5.62d0)then
+                        fallback = 0.06d0*mc-0.03d0
+                        mt = MAX(mch,MIN(mxns,fallback*mass))
+                        WRITE(*,*)' Remnant type NS '
+                        WRITE(*,*)' Remnant mass ',mt
+*                    Always Black Holes
+                     elseif(mc.gt.16.18d0)then
+                        mt = mc
+                        fallback = 1.d0
+                        WRITE(*,*)' Remnant type BH '
+                        WRITE(*,*)' Remnant mass ',mt
+*                    Identify the case of mass transfer
+*                    and compute the different ranges of Mco
+                     else
+*                       value of solar metallicity from Asplund et al. 2009
+                        logz = log10(met/0.01432d0)
+***    HOW TO GET ACCESS TO MASS TRANSFER HISTORY IN COSMIC ??   ***
+                        history = 'C'
+                        if(history.eq.'A')then
+*                           print*, 'case A mass transfer'
+                           Mco1 = 7.4d0 + (7.4d0-6.9d0)*logz
+                           Mco2 = 8.4d0 + (8.4d0-7.4d0)*logz
+                           Mco3 = 15.4d0 + (15.4d0-13.7d0)*logz
+                           McoNS1 = 11.1d0 + (11.1d0-10.4d0)*logz
+                           McoNS2 = 12.1d0 + (12.1d0-11.1d0)*logz
+                        elseif(history.eq.'B')then
+*                           print*, 'case B mass transfer'
+                           Mco1 = 7.7d0 + (7.7d0-6.9d0)*logz
+                           Mco2 = 8.3d0 + (8.3d0-7.9d0)*logz
+                           Mco3 = 15.2d0 + (15.2d0-13.7d0)*logz
+                           McoNS1 = 9.9d0 + (9.9d0-9.3d0)*logz
+                           McoNS2 = 10.3d0 + (10.3d0-10.3d0)*logz
+                        elseif(history.eq.'C')then
+*                           print*, 'case C mass transfer'
+                           Mco1 = 6.6d0 + (6.6d0-6.3d0)*logz
+                           Mco2 = 7.1d0 + (7.1d0-7.1d0)*logz
+                           Mco3 = 13.2d0 + (13.2d0-12.3d0)*logz
+                           McoNS1 = 9.6d0 + (9.6d0-8.9d0)*logz
+                           McoNS2 = 10.7d0 + (10.7d0-9.5d0)*logz
+                        else
+*                           print*, 'single case'
+                           Mco1 = 6.6d0 + (6.6d0-6.1d0)*logz
+                           Mco2 = 7.2d0 + (7.2d0-6.6d0)*logz
+                           Mco3 = 13.0d0 + (13.0d0-12.9d0)*logz
+                           McoNS1 = 9.0d0 + (9.0d0-7.4d0)*logz
+                           McoNS2 = 10.2d0 + (10.2d0-11.0d0)*logz
+                        endif
+*                       Range in which Mco lies:
+*                       Neutron Stars
+                        if(mc.lt.Mco1)then
+                           fallback = 0.06d0*mc-0.03d0
+                           mt = MAX(mch,MIN(mxns,fallback*mass))
+                           WRITE(*,*)' Remnant type NS '
+                           WRITE(*,*)' Remnant mass ',mt
+*                       Black Holes - direct collapse
+                        elseif(mc.ge.Mco1 .and. mc.le.Mco2)then
+                           fallback = 1.d0
+                           mt = MAX(mxns,fallback*mass)
+                           WRITE(*,*)' Remnant type BH '
+                           WRITE(*,*)' Remnant mass ',mt
+*                       Neutron Stars
+                        elseif(mc.ge.McoNS1 .and. mc.le.McoNS2)then
+                           fallback = 0.06d0*mc-0.03d0
+                           mt = MAX(mch,MIN(mxns,fallback*mass))
+                           WRITE(*,*)' Remnant type NS '
+                           WRITE(*,*)' Remnant mass ',mt
+*                       Black Holes - direct collapse
+                        elseif(mc.gt.Mco3)then
+                           fallback = 1.d0
+                           mt = mass
+                           WRITE(*,*)' Remnant type BH '
+                           WRITE(*,*)' Remnant mass ',mt
+                        else
+                           xx = ran3(idum1)
+*                          Neutron Stars
+                           if(xx.gt.0.1d0)then
+                              fallback = 0.06d0*mc-0.03d0
+                              mt = MIN(mxns,fallback*mass)
+                              WRITE(*,*)' Remnant type NS '
+                              WRITE(*,*)' Remnant mass ',mt
+*                          Black Holes
+                           else
+                              fallback = 1.d0
+                              mt = MAX(mxns,fallback*mass)
+                              WRITE(*,*)' Remnant type BH '
+                              WRITE(*,*)' Remnant mass ',mt
+                           endif
+                        endif
+                     endif
                   endif
 
 * Specify the baryonic to gravitational remnant mass prescription
 * MJZ 04/2020
 
 * Determine gravitational mass using Lattimer & Yahil 1989 for remnantflag>1
-                  if(remnantflag.le.1)then
+                  if(remnantflag.le.1 .or. remnantflag.eq.5)then
                      mrem = mt
                   else
                      mrem = 6.6666667d0*(SQRT(1.d0+0.3d0*mt)-1.d0)
