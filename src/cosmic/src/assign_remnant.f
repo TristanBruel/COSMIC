@@ -241,9 +241,9 @@
 *
 *                    WRITE(*,*)' MCO ',mc
 *                    WRITE(*,*)' Metallicity ',met
+                     fallback = MIN(0.06d0*mc-0.03d0, 1.d0)
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
-                        fallback = 0.06d0*mc-0.03d0
                         mt = MAX(mch,MIN(mxns,fallback*mass))
 *                    Always Black Holes
                      elseif(mc.gt.16.18d0)then
@@ -284,15 +284,13 @@
 *                       Range in which Mco lies:
 *                       Neutron Stars
                         if(mc.lt.Mco1)then
-                           fallback = 0.06d0*mc-0.03d0
                            mt = MAX(mch,MIN(mxns,fallback*mass))
 *                       Black Holes - direct collapse
                         elseif(mc.ge.Mco1 .and. mc.le.Mco2)then
-                           fallback = 1.d0
+*                          fallback = 1.d0
                            mt = MAX(mxns,fallback*mass)
 *                       Neutron Stars
                         elseif(mc.ge.McoNS1 .and. mc.le.McoNS2)then
-                           fallback = 0.06d0*mc-0.03d0
                            mt = MAX(mch,MIN(mxns,fallback*mass))
 *                       Black Holes - direct collapse
                         elseif(mc.gt.Mco3)then
@@ -302,11 +300,10 @@
                            xx = ran3(idum1)
 *                          Neutron Stars
                            if(xx.gt.0.1d0)then
-                              fallback = 0.06d0*mc-0.03d0
                               mt = MIN(mxns,fallback*mass)
 *                          Black Holes
                            else
-                              fallback = 1.d0
+*                             fallback = 1.d0
                               mt = MAX(mxns,fallback*mass)
                            endif
                         endif
