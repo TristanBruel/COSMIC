@@ -1,6 +1,6 @@
 ***
       SUBROUTINE assign_remnant(zpars,mc,mcbagb,mass,mt,kw,bhspin,kidx,
-     &                          met,transfertype)
+     &                          met,caseMT)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
       
@@ -14,7 +14,7 @@
       real*8 mc,mcbagb,mass,mt,met
       real*8 frac,kappa,sappa,alphap,polyfit
       real*8 mcx, bhspin,mrem,mch
-      integer kw,kidx,transfertype
+      integer kw,kidx,caseMT
       real*8 logz
       real*8 Mco1,Mco2,Mco3,McoNS1,McoNS2
 
@@ -239,50 +239,42 @@
 * Use the Explodability Criteria from (Maltsev et al. 2025, A&A, 700,A20)
 * with the Remnant Mass Relation from (Ugolini et al. 2025, A&A, 695,A122)
 *
-                     WRITE(*,*)' MCO ',mc
-                     WRITE(*,*)' Metallicity ',met
+*                    WRITE(*,*)' MCO ',mc
+*                    WRITE(*,*)' Metallicity ',met
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
                         fallback = 0.06d0*mc-0.03d0
                         mt = MAX(mch,MIN(mxns,fallback*mass))
-                        WRITE(*,*)' Remnant type NS '
-                        WRITE(*,*)' Remnant mass ',mt
 *                    Always Black Holes
                      elseif(mc.gt.16.18d0)then
                         mt = mc
                         fallback = 1.d0
-                        WRITE(*,*)' Remnant type BH '
-                        WRITE(*,*)' Remnant mass ',mt
 *                    Identify the case of mass transfer
 *                    and compute the different ranges of Mco
                      else
 *                       value of solar metallicity from Asplund et al. 2009
                         logz = log10(met/0.01432d0)
 ***    HOW TO GET ACCESS TO MASS TRANSFER HISTORY IN COSMIC ??   ***
-                        WRITE(*,*)'transfertype is',transfertype
-                        if(transfertype.eq.1)then
-                           WRITE(*,*)'case A mass transfer'
+*                       WRITE(*,*)'caseMT is',caseMT
+                        if(caseMT.eq.1)then
                            Mco1 = 7.4d0 + (7.4d0-6.9d0)*logz
                            Mco2 = 8.4d0 + (8.4d0-7.4d0)*logz
                            Mco3 = 15.4d0 + (15.4d0-13.7d0)*logz
                            McoNS1 = 11.1d0 + (11.1d0-10.4d0)*logz
                            McoNS2 = 12.1d0 + (12.1d0-11.1d0)*logz
-                        elseif(transfertype.eq.2)then
-                           WRITE(*,*)'case B mass transfer'
+                        elseif(caseMT.eq.2)then
                            Mco1 = 7.7d0 + (7.7d0-6.9d0)*logz
                            Mco2 = 8.3d0 + (8.3d0-7.9d0)*logz
                            Mco3 = 15.2d0 + (15.2d0-13.7d0)*logz
                            McoNS1 = 9.9d0 + (9.9d0-9.3d0)*logz
                            McoNS2 = 10.3d0 + (10.3d0-10.3d0)*logz
-                        elseif(transfertype.eq.3)then
-                           WRITE(*,*)'case C mass transfer'
+                        elseif(caseMT.eq.3)then
                            Mco1 = 6.6d0 + (6.6d0-6.3d0)*logz
                            Mco2 = 7.1d0 + (7.1d0-7.1d0)*logz
                            Mco3 = 13.2d0 + (13.2d0-12.3d0)*logz
                            McoNS1 = 9.6d0 + (9.6d0-8.9d0)*logz
                            McoNS2 = 10.7d0 + (10.7d0-9.5d0)*logz
                         else
-                           WRITE(*,*)'case single'
                            Mco1 = 6.6d0 + (6.6d0-6.1d0)*logz
                            Mco2 = 7.2d0 + (7.2d0-6.6d0)*logz
                            Mco3 = 13.0d0 + (13.0d0-12.9d0)*logz
@@ -294,40 +286,28 @@
                         if(mc.lt.Mco1)then
                            fallback = 0.06d0*mc-0.03d0
                            mt = MAX(mch,MIN(mxns,fallback*mass))
-                           WRITE(*,*)' Remnant type NS '
-                           WRITE(*,*)' Remnant mass ',mt
 *                       Black Holes - direct collapse
                         elseif(mc.ge.Mco1 .and. mc.le.Mco2)then
                            fallback = 1.d0
                            mt = MAX(mxns,fallback*mass)
-                           WRITE(*,*)' Remnant type BH '
-                           WRITE(*,*)' Remnant mass ',mt
 *                       Neutron Stars
                         elseif(mc.ge.McoNS1 .and. mc.le.McoNS2)then
                            fallback = 0.06d0*mc-0.03d0
                            mt = MAX(mch,MIN(mxns,fallback*mass))
-                           WRITE(*,*)' Remnant type NS '
-                           WRITE(*,*)' Remnant mass ',mt
 *                       Black Holes - direct collapse
                         elseif(mc.gt.Mco3)then
                            fallback = 1.d0
                            mt = mass
-                           WRITE(*,*)' Remnant type BH '
-                           WRITE(*,*)' Remnant mass ',mt
                         else
                            xx = ran3(idum1)
 *                          Neutron Stars
                            if(xx.gt.0.1d0)then
                               fallback = 0.06d0*mc-0.03d0
                               mt = MIN(mxns,fallback*mass)
-                              WRITE(*,*)' Remnant type NS '
-                              WRITE(*,*)' Remnant mass ',mt
 *                          Black Holes
                            else
                               fallback = 1.d0
                               mt = MAX(mxns,fallback*mass)
-                              WRITE(*,*)' Remnant type BH '
-                              WRITE(*,*)' Remnant mass ',mt
                            endif
                         endif
                      endif

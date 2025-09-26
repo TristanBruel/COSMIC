@@ -1710,21 +1710,12 @@ component.
 *
       if(rad(j1).gt.rol(j1))then
 * Identify the case of mass transfer
-         if(kstar(j1).le.1)then
+         if(kstar(j1).le.1 .and. caseMT(j1).eq.0)then
             caseMT(j1) = 1
-            WRITE(*,*)'this is a case A mass transfer'
-            WRITE(*,*)'kstar(1) is ',kstar(1)
-            WRITE(*,*)'kstar(2) is ',kstar(2)
-         elseif(kstar(j1).le.3)then
+         elseif(kstar(j1).le.3 .and. caseMT(j1).eq.0)then
             caseMT(j1) = 2
-            WRITE(*,*)'this is a case B mass transfer'
-            WRITE(*,*)'kstar(1) is ',kstar(1)
-            WRITE(*,*)'kstar(2) is ',kstar(2)
-         elseif(kstar(j1).gt.3)then
+         elseif(kstar(j1).gt.3 .and. caseMT(j1).eq.0)then
             caseMT(j1) = 3
-            WRITE(*,*)'this is a case C mass transfer'
-            WRITE(*,*)'kstar(1) is ',kstar(1)
-            WRITE(*,*)'kstar(2) is ',kstar(2)
          endif
 *
 * Interpolate back until the primary is just filling its Roche lobe.
