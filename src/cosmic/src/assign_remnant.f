@@ -247,14 +247,15 @@
                         mt = MAX(mch,MIN(mxns,fallback*mass))
 *                    Always Black Holes
                      elseif(mc.gt.16.18d0)then
-                        mt = mc
                         fallback = 1.d0
+                        mt = mc
 *                    Identify the case of mass transfer
 *                    and compute the different ranges of Mco
                      else
 *                       value of solar metallicity from Asplund et al. 2009
-                        logz = log10(met/0.01432d0)
-***    HOW TO GET ACCESS TO MASS TRANSFER HISTORY IN COSMIC ??   ***
+*                       extrapolate only between 1/20 and 1 [Zsun]
+                        logz=MAX(log10(met/0.01432d0),log10(1.d0/20.d0))
+                        logz=MIN(logz,0.d0)
 *                       WRITE(*,*)'caseMT is',caseMT
                         if(caseMT.eq.1)then
                            Mco1 = 7.4d0 + (7.4d0-6.9d0)*logz
@@ -273,7 +274,7 @@
                            Mco2 = 7.1d0 + (7.1d0-7.1d0)*logz
                            Mco3 = 13.2d0 + (13.2d0-12.3d0)*logz
                            McoNS1 = 9.6d0 + (9.6d0-8.9d0)*logz
-                           McoNS2 = 10.7d0 + (10.7d0-9.5d0)*logz
+                           McoNS2 = 11.7d0 + (11.7d0-9.5d0)*logz
                         else
                            Mco1 = 6.6d0 + (6.6d0-6.1d0)*logz
                            Mco2 = 7.2d0 + (7.2d0-6.6d0)*logz
@@ -287,7 +288,7 @@
                            mt = MAX(mch,MIN(mxns,fallback*mass))
 *                       Black Holes - direct collapse
                         elseif(mc.ge.Mco1 .and. mc.le.Mco2)then
-*                          fallback = 1.d0
+                           fallback = 1.d0
                            mt = MAX(mxns,fallback*mass)
 *                       Neutron Stars
                         elseif(mc.ge.McoNS1 .and. mc.le.McoNS2)then

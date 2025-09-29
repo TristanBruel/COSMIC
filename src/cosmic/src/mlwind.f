@@ -1,8 +1,8 @@
 ***
-      real*8 FUNCTION mlwind(kw,lum,r,mt,mc,rl,z)
+      real*8 FUNCTION mlwind(kw,lum,r,mt,mc,rl,z,caseMT)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
-      integer kw,testflag
+      integer kw,testflag,caseMT
       real*8 lum,r,mt,mc,rl,z,teff,alpha
       real*8 dml,dms,dmt,p0,x,mew,lum0,kap
       real*8 MLalpha
@@ -59,6 +59,7 @@
                if(lum.gt.6.0d+05.and.x.gt.1.d0)then
                   dml = 0.1d0*(x-1.d0)**3*(lum/6.0d+05-1.d0)
                   dms = dms + dml
+                  caseMT = 2
                endif
             endif
          endif
@@ -118,6 +119,7 @@
                if(lum.gt.6.0d+05.and.x.gt.1.d0)then
                   dml = 0.1d0*(x-1.d0)**3*(lum/6.0d+05-1.d0)
                   dms = dms + dml
+                  caseMT = 2
                endif
             endif
          endif
@@ -196,6 +198,7 @@
                if(eddlimflag.eq.1) alpha = MLalpha(mt,lum,kw)
                dms = 1.5d0*1.0d-04*((z/zsun)**alpha)
                testflag = 3
+               caseMT = 2
             endif
          elseif(kw.ge.7.and.kw.le.9)then !WR (naked helium stars)
 * If naked helium use Hamann & Koesterke (1998) WR winds reduced by factor of
@@ -236,6 +239,7 @@
                if(lum.gt.6.0d+05.and.x.gt.1.d0)then
                   dml = 0.1d0*(x-1.d0)**3*(lum/6.0d+05-1.d0)
                   dms = dms + dml
+                  caseMT = 2
                endif
             endif
          endif
