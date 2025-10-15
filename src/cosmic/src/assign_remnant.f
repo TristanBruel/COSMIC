@@ -239,16 +239,16 @@
 * Use the Explodability Criteria from (Maltsev et al. 2025, A&A, 700,A20)
 * with the Remnant Mass Relation from (Ugolini et al. 2025, A&A, 695,A122)
 *
-*                    WRITE(*,*)' MCO ',mc
-*                    WRITE(*,*)' Metallicity ',met
+*                    WRITE(*,*)' MCO is',mc
+*                    WRITE(*,*)' Metallicity is',met
                      fallback = MIN(0.06d0*mc-0.03d0, 1.d0)
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
-                        mt = MAX(mch,MIN(mxns,fallback*mass))
+*                       mt = MAX(mch,MIN(mxns,fallback*mt))
+                        mt = fallback*mt
 *                    Always Black Holes
                      elseif(mc.gt.16.18d0)then
                         fallback = 1.d0
-                        mt = mc
 *                    Identify the case of mass transfer
 *                    and compute the different ranges of Mco
                      else
@@ -285,30 +285,33 @@
 *                       Range in which Mco lies:
 *                       Neutron Stars
                         if(mc.lt.Mco1)then
-                           mt = MAX(mch,MIN(mxns,fallback*mass))
+*                          mt = MAX(mch,MIN(mxns,fallback*mt))
+                           mt = fallback*mt
 *                       Black Holes - direct collapse
                         elseif(mc.ge.Mco1 .and. mc.le.Mco2)then
                            fallback = 1.d0
-                           mt = MAX(mxns,fallback*mass)
 *                       Neutron Stars
                         elseif(mc.ge.McoNS1 .and. mc.le.McoNS2)then
-                           mt = MAX(mch,MIN(mxns,fallback*mass))
+*                          mt = MAX(mch,MIN(mxns,fallback*mt))
+                           mt = fallback*mt
 *                       Black Holes - direct collapse
                         elseif(mc.gt.Mco3)then
                            fallback = 1.d0
-                           mt = mass
                         else
                            xx = ran3(idum1)
 *                          Neutron Stars
                            if(xx.gt.0.15d0)then
-                              mt = MIN(mxns,fallback*mass)
+*                             mt = MIN(mxns,fallback*mt)
+                              mt = fallback*mt
 *                          Black Holes
                            else
-*                             fallback = 1.d0
-                              mt = MAX(mxns,fallback*mass)
+*                             mt = MAX(mxns,fallback*mt)
+                              mt = fallback*mt
                            endif
                         endif
                      endif
+*                    WRITE(*,*)'mt is',mt
+*                    WRITE(*,*)'fallback is',fallback
                   elseif(remnantflag.eq.6)then
 *
 * Model B from (Maltsev et al. 2025, A&A, 700,A20)
@@ -317,11 +320,10 @@
                      fallback = MIN(0.06d0*mc-0.03d0, 1.d0)
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
-                        mt = MAX(mch,MIN(mxns,fallback*mass))
+                        mt = MAX(mch,MIN(mxns,fallback*mt))
 *                    Always Black Holes
                      elseif(mc.gt.16.18d0)then
                         fallback = 1.d0
-                        mt = mc
 *                    Identify the case of mass transfer
 *                    and compute the different ranges of Mco
                      else
@@ -353,20 +355,18 @@
 *                       Black Holes - direct collapse
                         elseif(mc.ge.Mco1 .and. mc.le.Mco2)then
                            fallback = 1.d0
-                           mt = MAX(mxns,fallback*mass)
 *                       Black Holes - direct collapse
                         elseif(mc.gt.Mco3)then
                            fallback = 1.d0
-                           mt = mass
                         else
                            xx = ran3(idum1)
 *                          Neutron Stars
                            if(xx.gt.0.1d0)then
-                              mt = MIN(mxns,fallback*mass)
+                              mt = MIN(mxns,fallback*mt)
 *                          Black Holes
                            else
 *                             fallback = 1.d0
-                              mt = MAX(mxns,fallback*mass)
+                              mt = MAX(mxns,fallback*mt)
                            endif
                         endif
                      endif
@@ -376,7 +376,7 @@
 * MJZ 04/2020
 
 * Determine gravitational mass using Lattimer & Yahil 1989 for remnantflag>1
-                  if(remnantflag.le.1 .or. remnantflag.ge.5)then
+                  if(remnantflag.le.1)then
                      mrem = mt
                   else
                      mrem = 6.6666667d0*(SQRT(1.d0+0.3d0*mt)-1.d0)
