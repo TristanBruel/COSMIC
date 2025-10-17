@@ -305,7 +305,7 @@
                               mt = fallback*mt
 *                          Black Holes
                            else
-*                             mt = MAX(mxns,fallback*mt)
+                              fallback = 1.d0
                               mt = fallback*mt
                            endif
                         endif
