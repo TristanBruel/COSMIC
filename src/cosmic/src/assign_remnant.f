@@ -239,8 +239,8 @@
 * Use the Explodability Criteria from (Maltsev et al. 2025, A&A, 700,A20)
 * with the Remnant Mass Relation from (Ugolini et al. 2025, A&A, 695,A122)
 *
-*                    WRITE(*,*)' MCO is',mc
-*                    WRITE(*,*)' Metallicity is',met
+*                   WRITE(*,*)' MCO is',mc
+*                   WRITE(*,*)' Metallicity is',met
                      fallback = MIN(0.06d0*mc-0.03d0, 1.d0)
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
@@ -256,7 +256,7 @@
 *                       extrapolate only between 1/20 and 1 [Zsun]
                         logz=MAX(log10(met/0.01432d0),log10(1.d0/20.d0))
                         logz=MIN(logz,0.d0)
-*                       WRITE(*,*)'caseMT is',caseMT
+*                      WRITE(*,*)'caseMT is',caseMT
                         if(caseMT.eq.1)then
                            Mco1 = 7.4d0 + (7.4d0-6.9d0)*logz
                            Mco2 = 8.4d0 + (8.4d0-7.4d0)*logz
@@ -310,8 +310,8 @@
                            endif
                         endif
                      endif
-*                    WRITE(*,*)'mt is',mt
-*                    WRITE(*,*)'fallback is',fallback
+*                   WRITE(*,*)'mt is',mt
+*                   WRITE(*,*)'fallback is',fallback
                   elseif(remnantflag.eq.6)then
 *
 * Model B from (Maltsev et al. 2025, A&A, 700,A20)

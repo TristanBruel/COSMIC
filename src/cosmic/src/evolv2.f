@@ -189,7 +189,7 @@
 *
       INTEGER pulsar
       INTEGER mergemsp,merge_mem,notamerger,binstate,mergertype
-      INTEGER caseMT(2)
+      INTEGER caseMT(2),cMT
       REAL*8 fallback,sigmahold
       REAL*8 vk,u1,u2,s,Kconst,betahold,convradcomp(2),teff(2)
       REAL*8 B_0(2),bacc(2),tacc(2),xip,xihold
@@ -283,7 +283,7 @@ Cf2py intent(out) kick_info_out
 * value for bcm[ii,38] which tracks merger types; only set when binstate is 1
 * the logic is to combine kstar values of merged objects. so 1313 or 0809.
       mergertype = -1
-* value for ? which tracks cases of mass transfer;
+* value for bcm[ii,39] which tracks cases of mass transfer;
 * case A (= 1) is for RLOF during MS evolution
 * case B (= 2) is for RLOF between MS and CHeB
 * case C (= 3) is for RLOF after CHeB
@@ -417,10 +417,11 @@ component.
          age = tphys - epoch(k)
          mc = massc(k)
          rc = radc(k)
+         cMT = caseMT(k)
          CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(mass0(k),age,mass(k),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(k),mc,rc,me,re,k2,bhspin(k),k,
-     &               caseMT(k))
+     &               cMT)
          aj(k) = age
          epoch(k) = tphys - age
          rad(k) = rm
@@ -558,9 +559,10 @@ component.
             !check for kstar added by PA
             if(neta.gt.tiny .and. kstar(k)<15)then
                rlperi = rol(k)*(1.d0-ecc)
+               cMT = caseMT(k)
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
      &                         massc(k),rlperi,z,
-     &                         caseMT(k))
+     &                         cMT)
 *
 * Calculate how much of wind mass loss from companion will be
 * accreted (Boffin & Jorissen, A&A 1988, 205, 155).
@@ -922,12 +924,13 @@ component.
 *
       elseif(ABS(dtm).gt.tiny.and.sgl)then
          do 503 , k = kmin,kmax
+            cMT = caseMT(k)
             !check for kstar added by PA
             if(neta.gt.tiny .and. kstar(k)<15)then
                rlperi = 0.d0
                dmr(k) = mlwind(kstar(k),lumin(k),rad(k),mass(k),
      &                         massc(k),rlperi,z,
-     &                         caseMT(k))
+     &                         cMT)
             else
                dmr(k) = 0.d0
             endif
@@ -1214,6 +1217,7 @@ component.
          if(intpol.eq.0) mcxx(k) = mc
          if(intpol.gt.0) mc = mcxx(k)
          mass00(k) = m0
+         cMT = caseMT(k)
 *
 * Masses over 100Msun should probably not be trusted in the
 * evolution formulae.
@@ -1226,7 +1230,7 @@ component.
 *
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
-     &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k,caseMT(k))
+     &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k,cMT)
 *
          if(kw.ne.15)then
             ospin(k) = jspin(k)/(k2*(mt-mc)*rm*rm+k3*mc*rc*rc)
@@ -1440,7 +1444,7 @@ component.
 
 *
 *
-* Force new NS or BH to have a birth spin peirod and magnetic field.
+* Force new NS or BH to have a birth spin period and magnetic field.
 *
          if(kstar(k).eq.13.or.kstar(k).eq.14)then
 * re-calculate the Eddington limit of the newly formed CO
@@ -1712,11 +1716,11 @@ component.
 *
       if(rad(j1).gt.rol(j1))then
 * Identify the case of mass transfer
-         if(kstar(j1).le.1 .and. caseMT(j1).eq.0)then
+         if(kstar(j1).le.1.and.caseMT(j1).eq.0)then
             caseMT(j1) = 1
-         elseif(kstar(j1).le.3 .and. caseMT(j1).eq.0)then
+         elseif(kstar(j1).le.3.and.caseMT(j1).eq.0)then
             caseMT(j1) = 2
-         elseif(kstar(j1).gt.3 .and. caseMT(j1).eq.0)then
+         elseif(kstar(j1).gt.3.and.caseMT(j1).eq.0)then
             caseMT(j1) = 3
          endif
 *
@@ -1911,7 +1915,6 @@ component.
       else
          b02_bcm = B(2)
       endif
-
       CALL writetab(jp,tphys,evolve_type,
      &              mass(1),mass(2),kstar(1),kstar(2),sep,
      &              tb,ecc,rrl1,rrl2,
@@ -2425,7 +2428,6 @@ component.
      &                 deltam1_bcm,deltam2_bcm,formation(1),
      &                 formation(2),binstate,mergertype,
      &                 caseMT(1),caseMT(2),'bpp')
-
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
@@ -2484,10 +2486,11 @@ component.
          
          mc = massc(1)
          rc = radc(1)
+         cMT = caseMT(1)
          CALL star(kstar(1),mass0(1),mass(1),tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(mass0(1),aj(1),mass(1),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(1),mc,rc,me,re,k2,bhspin(1),1,
-     &               caseMT(1))
+     &               cMT)
      
          rad(1) = rm
          lumin(1) = lum  
@@ -2499,10 +2502,11 @@ component.
          
          mc = massc(2)
          rc = radc(2)
+         cMT = caseMT(2)
          CALL star(kstar(2),mass0(2),mass(2),tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(mass0(2),aj(2),mass(2),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(2),mc,rc,me,re,k2,bhspin(2),2,
-     &               caseMT(2))
+     &               cMT)
      
          rad(2) = rm
          lumin(2) = lum  
@@ -2816,9 +2820,10 @@ component.
                   endif
                endif
                rlperi = rol(k)*(1.d0-ecc)
+               cMT = caseMT(k)
                dmr(k) = mlwind(kstar(k),lumin(k),radx(k),
      &                         mass(k),massc(k),rlperi,z,
-     &                         caseMT(k))
+     &                         cMT)
                vwind2 = 2.d0*beta*acc1*mass(k)/radx(k)
                omv2 = (1.d0 + vorb2/vwind2)**(3.d0/2.d0)
                dmt(3-k) = ivsqm*acc2*dmr(k)*((acc1*mass(3-k)/vwind2)**2)
@@ -3578,6 +3583,7 @@ component.
          m0 = mass0(k)
          mt = mass(k)
          mc = massc(k)
+         cMT = caseMT(k)
 *
 * Masses over 100Msun should probably not be trusted in the
 * evolution formulae.
@@ -3590,7 +3596,7 @@ component.
          kw = kstar(k)
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
-     &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k,caseMT(k))
+     &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k,cMT)
          pd = sep*(1.d0 - ecc)
          if(pd.lt.(rad(1)+rad(2))) goto 130
 
