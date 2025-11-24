@@ -192,7 +192,9 @@
 *
 * Use the "Delayed" SN Prescription (Fryer et al. 2012, APJ, 749,91)
 *
-*                    For this, we just set the proto-core mass to one
+                     WRITE(*,*)'MCO',mc
+                     WRITE(*,*)'Metallicity',met
+*                    Get the proto-core mass
                      if(mc.le.3.5d0)then
                         mcx = 1.2d0
                      elseif(mc.le.6.d0)then
@@ -237,14 +239,15 @@
                   elseif(remnantflag.eq.5)then
 *
 * Use the Explodability Criteria from (Maltsev et al. 2025, A&A, 700,A20)
-* with the Remnant Mass Relation from (Ugolini et al. 2025, A&A, 695,A122)
+* with linear interpolation of the fallback fraction between direct BHs and NSs
 *
-*                   WRITE(*,*)' MCO is',mc
-*                   WRITE(*,*)' Metallicity is',met
-                     fallback = MIN(0.06d0*mc-0.03d0, 1.d0)
+                     WRITE(*,*)'MCO',mc
+                     WRITE(*,*)'Metallicity',met
+                     WRITE(*,*)'caseMT',caseMT
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
-*                       mt = MAX(mch,MIN(mxns,fallback*mt))
+*                       mt = MIN(mxns,fallback*mt)
+                        fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
                         mt = fallback*mt
 *                    Always Black Holes
                      elseif(mc.gt.16.18d0)then
@@ -256,7 +259,6 @@
 *                       extrapolate only between 1/20 and 1 [Zsun]
                         logz=MAX(log10(met/0.01432d0),log10(1.d0/20.d0))
                         logz=MIN(logz,0.d0)
-*                      WRITE(*,*)'caseMT is',caseMT
                         if(caseMT.eq.1)then
                            Mco1 = 7.4d0 + (7.4d0-6.9d0)*logz
                            Mco2 = 8.4d0 + (8.4d0-7.4d0)*logz
@@ -285,42 +287,57 @@
 *                       Range in which Mco lies:
 *                       Neutron Stars
                         if(mc.lt.Mco1)then
-*                          mt = MAX(mch,MIN(mxns,fallback*mt))
+*                          mt = MIN(mxns,fallback*mt)
+                           fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
                            mt = fallback*mt
 *                       Black Holes - direct collapse
                         elseif(mc.ge.Mco1 .and. mc.le.Mco2)then
                            fallback = 1.d0
 *                       Neutron Stars
                         elseif(mc.ge.McoNS1 .and. mc.le.McoNS2)then
-*                          mt = MAX(mch,MIN(mxns,fallback*mt))
+*                          mt = MIN(mxns,fallback*mt)
+                           fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
                            mt = fallback*mt
 *                       Black Holes - direct collapse
                         elseif(mc.gt.Mco3)then
                            fallback = 1.d0
+*                       Either Neutron Stars or Black Holes
                         else
+                           if(mc.le.McoNS1)then
+                              fallback = (mc-McoNS1)/(Mco2-McoNS1)
+                              fallback = 0.1d0 + 0.8d0*fallback
+                           else
+                              fallback = (mc-McoNS2)/(Mco3-McoNS2)
+                              fallback = 0.1d0 + 0.8d0*fallback
+                           endif
                            xx = ran3(idum1)
 *                          Neutron Stars
                            if(xx.gt.0.15d0)then
 *                             mt = MIN(mxns,fallback*mt)
+                              fallback = MIN(fallback,mxns/mt)
                               mt = fallback*mt
 *                          Black Holes
                            else
-                              fallback = 1.d0
+*                             mt = MAX(mxns,fallback*mt)
+                              fallback = MAX(fallback,(mxns+1d0)/mt)
                               mt = fallback*mt
                            endif
                         endif
                      endif
-*                   WRITE(*,*)'mt is',mt
-*                   WRITE(*,*)'fallback is',fallback
+                     mc = mt
                   elseif(remnantflag.eq.6)then
 *
 * Model B from (Maltsev et al. 2025, A&A, 700,A20)
 * with the Remnant Mass Relation from (Ugolini et al. 2025, A&A, 695,A122)
 *
-                     fallback = MIN(0.06d0*mc-0.03d0, 1.d0)
+                     WRITE(*,*)'MCO',mc
+                     WRITE(*,*)'Metallicity',met
+                     WRITE(*,*)'caseMT',caseMT
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
-                        mt = MAX(mch,MIN(mxns,fallback*mt))
+*                       mt = MIN(mxns,fallback*mt)
+                        fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
+                        mt = fallback*mt
 *                    Always Black Holes
                      elseif(mc.gt.16.18d0)then
                         fallback = 1.d0
@@ -351,24 +368,32 @@
 *                       Range in which Mco lies:
 *                       Neutron Stars
                         if(mc.lt.Mco1)then
-                           mt = MAX(mch,MIN(mxns,fallback*mass))
+*                          mt = MIN(mxns,fallback*mt)
+                           fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
+                           mt = fallback*mt
 *                       Black Holes - direct collapse
                         elseif(mc.ge.Mco1 .and. mc.le.Mco2)then
                            fallback = 1.d0
 *                       Black Holes - direct collapse
                         elseif(mc.gt.Mco3)then
                            fallback = 1.d0
+*                       Either Neutron Stars or Black Holes
                         else
                            xx = ran3(idum1)
+                           fallback=MAX(0.06d0*mc-0.03d0,0.1d0)
 *                          Neutron Stars
                            if(xx.gt.0.1d0)then
-                              mt = MIN(mxns,fallback*mt)
+*                             mt = MIN(mxns,fallback*mt)
+                              fallback = MIN(fallback,mxns/mt)
+                              mt = fallback*mt
 *                          Black Holes
                            else
-*                             fallback = 1.d0
-                              mt = MAX(mxns,fallback*mt)
+*                             mt = MAX(mxns,fallback*mt)
+                              fallback = MAX(fallback,(mxns+1d0)/mt)
+                              mt = fallback*mt
                            endif
                         endif
+                     mc = mt
                      endif
                   endif
 
@@ -389,9 +414,11 @@
 
 * Determine whether a zero-age NS or BH is formed
                   if(mrem.le.mxns)then
+                     WRITE(*,*)'Remnant type NS'
                      mt = mrem
                      kw = 13
                   else
+                     WRITE(*,*)'Remnant type BH'
                      kw = 14
 
 * CLR - (Pulsational) Pair-Instability Supernova
@@ -519,6 +546,7 @@
                         Mbh_initial = mt
                      endif
                   endif
+                  WRITE(*,*)'Remnant mass',mrem
                endif
             endif
 *
