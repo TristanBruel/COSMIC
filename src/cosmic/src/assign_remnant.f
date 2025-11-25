@@ -1,6 +1,6 @@
 ***
       SUBROUTINE assign_remnant(zpars,mc,mcbagb,mass,mt,kw,bhspin,kidx,
-     &                          met,caseMT)
+     &                          met,caseMT,jp)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
       
@@ -14,7 +14,7 @@
       real*8 mc,mcbagb,mass,mt,met
       real*8 frac,kappa,sappa,alphap,polyfit
       real*8 mcx, bhspin,mrem,mch
-      integer kw,kidx,caseMT
+      integer kw,kidx,caseMT,jp
       real*8 logz
       real*8 Mco1,Mco2,Mco3,McoNS1,McoNS2
 
@@ -192,8 +192,8 @@
 *
 * Use the "Delayed" SN Prescription (Fryer et al. 2012, APJ, 749,91)
 *
-                     WRITE(*,*)'MCO',mc
-                     WRITE(*,*)'Metallicity',met
+*                    WRITE(*,*)'MCO',mc
+*                    WRITE(*,*)'Metallicity',met
 *                    Get the proto-core mass
                      if(mc.le.3.5d0)then
                         mcx = 1.2d0
@@ -241,9 +241,22 @@
 * Use the Explodability Criteria from (Maltsev et al. 2025, A&A, 700,A20)
 * with linear interpolation of the fallback fraction between direct BHs and NSs
 *
-                     WRITE(*,*)'MCO',mc
-                     WRITE(*,*)'Metallicity',met
-                     WRITE(*,*)'caseMT',caseMT
+*                    WRITE(*,*)'MCO',mc
+*                    WRITE(*,*)'Metallicity',met
+*                    WRITE(*,*)'caseMT',caseMT
+                     CALL writetab(jp,0.0d0,15.d0,
+     &                       0.d0,0.d0,0,0,
+     &                       0.d0,0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       mc,mc,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,
+     &                       0,0,0,0,0,0,'bpp')
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
 *                       mt = MIN(mxns,fallback*mt)
@@ -330,9 +343,22 @@
 * Model B from (Maltsev et al. 2025, A&A, 700,A20)
 * with the Remnant Mass Relation from (Ugolini et al. 2025, A&A, 695,A122)
 *
-                     WRITE(*,*)'MCO',mc
-                     WRITE(*,*)'Metallicity',met
-                     WRITE(*,*)'caseMT',caseMT
+*                    WRITE(*,*)'MCO',mc
+*                    WRITE(*,*)'Metallicity',met
+*                    WRITE(*,*)'caseMT',caseMT
+                     CALL writetab(jp,0.0d0,15.d0,
+     &                       0.d0,0.d0,0,0,
+     &                       0.d0,0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       mc,mc,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,
+     &                       0,0,0,0,0,0,'bpp')
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
 *                       mt = MIN(mxns,fallback*mt)
@@ -414,11 +440,11 @@
 
 * Determine whether a zero-age NS or BH is formed
                   if(mrem.le.mxns)then
-                     WRITE(*,*)'Remnant type NS'
+*                    WRITE(*,*)'Remnant type NS'
                      mt = mrem
                      kw = 13
                   else
-                     WRITE(*,*)'Remnant type BH'
+*                    WRITE(*,*)'Remnant type BH'
                      kw = 14
 
 * CLR - (Pulsational) Pair-Instability Supernova
@@ -546,7 +572,7 @@
                         Mbh_initial = mt
                      endif
                   endif
-                  WRITE(*,*)'Remnant mass',mrem
+*                 WRITE(*,*)'Remnant mass',mrem
                endif
             endif
 *

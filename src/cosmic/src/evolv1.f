@@ -336,7 +336,7 @@ c-------------------------------------------------------------c
  40      aj = ajhold + dtm
          mc1 = mc 
          CALL hrdiag(mass,aj,mt,tm,tn,tscls,lums,GB,zpars,
-     &               r1,lum1,kw,mc1,rc1,menv1,renv1,k21,1)
+     &               r1,lum1,kw,mc1,rc1,menv1,renv1,k21)
          dr = r1 - rm0
          it = it + 1
          if(it.eq.20.and.kw.eq.4) goto 50

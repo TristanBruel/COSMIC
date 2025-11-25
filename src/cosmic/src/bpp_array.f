@@ -10,8 +10,8 @@
      &                      b_0_1,b_0_2,bacc1,bacc2,tacc1,tacc2,
      &                      epoch1,epoch2,bhspin1,bhspin2,
      &                      deltam_1,deltam_2,SN_1,SN_2,
-     &                      bin_state,merger_type,case1,case2,
-     &                      tabname)
+     &                      bin_state,merger_type,
+     &                      caseMT_1,caseMT_2,tabname)
         IMPLICIT NONE
         INCLUDE 'const_bse.h'
 
@@ -30,7 +30,7 @@
         REAL*8 bhspin1,bhspin2,teff1,teff2
         REAL*8 deltam_1,deltam_2
         INTEGER SN_1,SN_2,bin_state,merger_type
-        INTEGER case1, case2
+        INTEGER caseMT_1, caseMT_2
         REAL*8 tb_write,sep_cubed
         INTEGER jp, col_ind
         INTEGER kstar1,kstar2
@@ -96,8 +96,8 @@
         all_cols(47) = float(SN_2)
         all_cols(48) = bin_state
         all_cols(49) = merger_type
-        all_cols(50) = case1
-        all_cols(51) = case2
+        all_cols(50) = caseMT_1
+        all_cols(51) = caseMT_2
 
 * check which table we are writing to and write the appropriate columns
         if (tabname .eq. 'bpp') then

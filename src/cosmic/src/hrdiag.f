@@ -1,7 +1,7 @@
 ***
       SUBROUTINE hrdiag(mass,aj,mt,tm,tn,tscls,lums,GB,zpars,
      &                  r,lum,kw,mc,rc,menv,renv,k2,
-     &                  bhspin,kidx,caseMT)
+     &                  bhspin,kidx,caseMT,jp)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
 *
@@ -23,7 +23,7 @@
 *       MS hook and more elaborate CHeB
 *
 *
-      integer kw,kwp,kidx,caseMT
+      integer kw,kwp,kidx,caseMT,jp
 *
       real*8 mass,aj,mt,tm,tn,tscls(20),lums(10),GB(10),zpars(20),met
       real*8 bhspin
@@ -450,7 +450,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
             aj = 0.d0
             mc = mcmax
             call assign_remnant(zpars,mc,mcbagb,mass,mt,kw,bhspin,kidx,
-     &          met,caseMT)
+     &          met,caseMT,jp)
          endif
 *
       endif
@@ -500,7 +500,7 @@ C      if(mt0.gt.100.d0) mt = 100.d0
                mcbagb = mass
                met = 10**(LOG10(zpars(14))/0.4)
                call assign_remnant(zpars,mc,mcbagb,mass,
-     &          mt,kw,bhspin,kidx,met,caseMT)
+     &          mt,kw,bhspin,kidx,met,caseMT,jp)
                
                if(kw.eq.11) mt = MAX(mc,(mc+0.31d0)/1.45d0)
             endif
