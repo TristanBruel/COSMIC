@@ -256,8 +256,6 @@
      &                       0,0,0,0,0,0,'bpp')
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
-*                       mt = MIN(mxns,fallback*mt)
->>>>>>> print_Mco
                         fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
                         mt = fallback*mt
 *                    Always Black Holes
@@ -354,8 +352,6 @@
      &                       0,0,0,0,0,0,'bpp')
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
-*                       mt = MIN(mxns,fallback*mt)
->>>>>>> print_Mco
                         fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
                         mt = fallback*mt
 *                    Always Black Holes
