@@ -94,10 +94,10 @@
         all_cols(45) = deltam_2
         all_cols(46) = float(SN_1)
         all_cols(47) = float(SN_2)
-        all_cols(48) = bin_state
-        all_cols(49) = merger_type
-        all_cols(50) = case1
-        all_cols(51) = case2
+        all_cols(48) = case1
+        all_cols(49) = case2
+        all_cols(50) = bin_state
+        all_cols(51) = merger_type
 
 * check which table we are writing to and write the appropriate columns
         if (tabname .eq. 'bpp') then
