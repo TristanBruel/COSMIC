@@ -192,8 +192,6 @@
 *
 * Use the "Delayed" SN Prescription (Fryer et al. 2012, APJ, 749,91)
 *
-*                    WRITE(*,*)'MCO',mc
-*                    WRITE(*,*)'Metallicity',met
 *                    Get the proto-core mass
                      if(mc.le.3.5d0)then
                         mcx = 1.2d0
@@ -241,25 +239,8 @@
 * Use the Explodability Criteria from (Maltsev et al. 2025, A&A, 700,A20)
 * with linear interpolation of the fallback fraction between direct BHs and NSs
 *
-*                    WRITE(*,*)'MCO',mc
-*                    WRITE(*,*)'Metallicity',met
-*                    WRITE(*,*)'caseMT',caseMT
-                     CALL writetab(jp,0.0d0,15.d0,
-     &                       0.d0,0.d0,0,0,
-     &                       0.d0,0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       mc,mc,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,
-     &                       0,0,0,0,0,0,'bpp')
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
-*                       mt = MIN(mxns,fallback*mt)
                         fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
                         mt = fallback*mt
 *                    Always Black Holes
@@ -268,7 +249,7 @@
 *                    Identify the case of mass transfer
 *                    and compute the different ranges of Mco
                      else
-*                       value of solar metallicity from Asplund et al. 2009
+*                       Value of solar metallicity from Asplund et al. 2009
 *                       extrapolate only between 1/20 and 1 [Zsun]
                         logz=MAX(log10(met/0.01432d0),log10(1.d0/20.d0))
                         logz=MIN(logz,0.d0)
@@ -300,7 +281,6 @@
 *                       Range in which Mco lies:
 *                       Neutron Stars
                         if(mc.lt.Mco1)then
-*                          mt = MIN(mxns,fallback*mt)
                            fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
                            mt = fallback*mt
 *                       Black Holes - direct collapse
@@ -308,7 +288,6 @@
                            fallback = 1.d0
 *                       Neutron Stars
                         elseif(mc.ge.McoNS1 .and. mc.le.McoNS2)then
-*                          mt = MIN(mxns,fallback*mt)
                            fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
                            mt = fallback*mt
 *                       Black Holes - direct collapse
@@ -326,12 +305,10 @@
                            xx = ran3(idum1)
 *                          Neutron Stars
                            if(xx.gt.0.15d0)then
-*                             mt = MIN(mxns,fallback*mt)
                               fallback = MIN(fallback,mxns/mt)
                               mt = fallback*mt
 *                          Black Holes
                            else
-*                             mt = MAX(mxns,fallback*mt)
                               fallback = MAX(fallback,(mxns+1d0)/mt)
                               mt = fallback*mt
                            endif
@@ -343,25 +320,8 @@
 * Model B from (Maltsev et al. 2025, A&A, 700,A20)
 * with the Remnant Mass Relation from (Ugolini et al. 2025, A&A, 695,A122)
 *
-*                    WRITE(*,*)'MCO',mc
-*                    WRITE(*,*)'Metallicity',met
-*                    WRITE(*,*)'caseMT',caseMT
-                     CALL writetab(jp,0.0d0,15.d0,
-     &                       0.d0,0.d0,0,0,
-     &                       0.d0,0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       mc,mc,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,
-     &                       0,0,0,0,0,0,'bpp')
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
-*                       mt = MIN(mxns,fallback*mt)
                         fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
                         mt = fallback*mt
 *                    Always Black Holes
@@ -370,7 +330,7 @@
 *                    Identify the case of mass transfer
 *                    and compute the different ranges of Mco
                      else
-*                       value of solar metallicity from Asplund et al. 2009
+*                       Value of solar metallicity from Asplund et al. 2009
 *                       extrapolate only between 1/20 and 1 [Zsun]
                         logz=MAX(log10(met/0.01432d0),log10(1.d0/20.d0))
                         logz=MIN(logz,0.d0)
@@ -394,7 +354,6 @@
 *                       Range in which Mco lies:
 *                       Neutron Stars
                         if(mc.lt.Mco1)then
-*                          mt = MIN(mxns,fallback*mt)
                            fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
                            mt = fallback*mt
 *                       Black Holes - direct collapse
@@ -409,12 +368,10 @@
                            fallback=MAX(0.06d0*mc-0.03d0,0.1d0)
 *                          Neutron Stars
                            if(xx.gt.0.1d0)then
-*                             mt = MIN(mxns,fallback*mt)
                               fallback = MIN(fallback,mxns/mt)
                               mt = fallback*mt
 *                          Black Holes
                            else
-*                             mt = MAX(mxns,fallback*mt)
                               fallback = MAX(fallback,(mxns+1d0)/mt)
                               mt = fallback*mt
                            endif

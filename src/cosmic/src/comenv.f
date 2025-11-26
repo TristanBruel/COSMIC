@@ -210,20 +210,6 @@
 *
          EORBF = EORBI + EBINDI/ALPHA1
          SEPF = m1endstage1*m2endstage1/(2.D0*EORBF)
-
-*         print*, 'Tmin 1', tmin1
-*         print*, 'Tonset 1', tonset1
-*         print*, 'Teff 1', teff1
-*         print*, 'Max convective envelope mass 1', mconvmax1
-*         print*, 'Mass of the convective envelope 1', mconv1
-*         print*, 'Mass 1 after 1st stage', m1endstage1
-*         print*, 'Tmin 2', tmin2
-*         print*, 'Tonset 2', tonset2
-*         print*, 'Teff 2', teff2
-*         print*, 'Max convective envelope mass 2', mconvmax2
-*         print*, 'Mass of the convective envelope 2', mconv2
-*         print*, 'Mass 2 after 1st stage', m2endstage1
-*         print*, 'Separation after 1st stage', SEPF
 *
 * Second stage: stable mass transfer of the radiative intershell
 *
@@ -238,7 +224,6 @@
          Q2 = 1.D0/Q1
          RL1 = RL(Q1)
          RL2 = RL(Q2)
-*         print*, 'Separation after 2nd stage', SEPF
 
       ELSE
 * 
