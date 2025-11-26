@@ -420,7 +420,7 @@ component.
          CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(mass0(k),age,mass(k),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(k),mc,rc,me,re,k2,bhspin(k),k,
-     &               caseMT(k))
+     &               caseMT(k),jp)
          aj(k) = age
          epoch(k) = tphys - age
          rad(k) = rm
@@ -1226,7 +1226,8 @@ component.
 *
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
-     &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k,caseMT(k))
+     &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k,
+     &               caseMT(k),jp)
 *
          if(kw.ne.15)then
             ospin(k) = jspin(k)/(k2*(mt-mc)*rm*rm+k3*mc*rc*rc)
@@ -2485,7 +2486,7 @@ component.
          CALL star(kstar(1),mass0(1),mass(1),tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(mass0(1),aj(1),mass(1),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(1),mc,rc,me,re,k2,bhspin(1),1,
-     &               caseMT(1))
+     &               caseMT(1),jp)
      
          rad(1) = rm
          lumin(1) = lum  
@@ -2500,7 +2501,7 @@ component.
          CALL star(kstar(2),mass0(2),mass(2),tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(mass0(2),aj(2),mass(2),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(2),mc,rc,me,re,k2,bhspin(2),2,
-     &               caseMT(2))
+     &               caseMT(2),jp)
      
          rad(2) = rm
          lumin(2) = lum  
@@ -3588,7 +3589,8 @@ component.
          kw = kstar(k)
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
-     &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k,caseMT(k))
+     &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k,
+     &               caseMT(k),jp)
          pd = sep*(1.d0 - ecc)
          if(pd.lt.(rad(1)+rad(2))) goto 130
 

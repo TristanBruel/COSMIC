@@ -68,7 +68,7 @@ BPP_COLUMNS = ['tphys', 'mass_1', 'mass_2', 'kstar_1', 'kstar_2',
                'radc_1', 'radc_2', 'menv_1', 'menv_2', 'renv_1', 'renv_2',
                'omega_spin_1', 'omega_spin_2', 'B_1', 'B_2', 'bacc_1', 'bacc_2',
                'tacc_1', 'tacc_2', 'epoch_1', 'epoch_2',
-               'bhspin_1', 'bhspin_2']
+               'bhspin_1', 'bhspin_2', 'caseMT_1', 'caseMT_2']
 
 BCM_COLUMNS = ['tphys', 'kstar_1', 'mass0_1', 'mass_1', 'lum_1', 'rad_1',
                'teff_1', 'massc_1', 'radc_1', 'menv_1', 'renv_1', 'epoch_1',

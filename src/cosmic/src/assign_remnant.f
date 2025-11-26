@@ -1,6 +1,6 @@
 ***
       SUBROUTINE assign_remnant(zpars,mc,mcbagb,mass,mt,kw,bhspin,kidx,
-     &                          met,caseMT)
+     &                          met,caseMT,jp)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
       
@@ -14,7 +14,7 @@
       real*8 mc,mcbagb,mass,mt,met
       real*8 frac,kappa,sappa,alphap,polyfit
       real*8 mcx, bhspin,mrem,mch
-      integer kw,kidx,caseMT
+      integer kw,kidx,caseMT,jp
       real*8 logz
       real*8 Mco1,Mco2,Mco3,McoNS1,McoNS2
 
@@ -241,6 +241,23 @@
 *
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
+                     CALL writetab(jp,0.0d0,15.d0,
+     &                       0.d0,0.d0,0,0,
+     &                       0.d0,0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       mc,mc,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,
+     &                       0,0,0,0,0,0,'bpp')
+*                    Always Neutron Stars
+                     if(mc.lt.5.62d0)then
+*                       mt = MIN(mxns,fallback*mt)
+>>>>>>> print_Mco
                         fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
                         mt = fallback*mt
 *                    Always Black Holes
@@ -322,6 +339,23 @@
 *
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
+                     CALL writetab(jp,0.0d0,15.d0,
+     &                       0.d0,0.d0,0,0,
+     &                       0.d0,0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       mc,mc,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,
+     &                       0,0,0,0,0,0,'bpp')
+*                    Always Neutron Stars
+                     if(mc.lt.5.62d0)then
+*                       mt = MIN(mxns,fallback*mt)
+>>>>>>> print_Mco
                         fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
                         mt = fallback*mt
 *                    Always Black Holes
@@ -397,9 +431,11 @@
 
 * Determine whether a zero-age NS or BH is formed
                   if(mrem.le.mxns)then
+*                    WRITE(*,*)'Remnant type NS'
                      mt = mrem
                      kw = 13
                   else
+*                    WRITE(*,*)'Remnant type BH'
                      kw = 14
 
 * CLR - (Pulsational) Pair-Instability Supernova
@@ -527,6 +563,7 @@
                         Mbh_initial = mt
                      endif
                   endif
+*                 WRITE(*,*)'Remnant mass',mrem
                endif
             endif
 *
