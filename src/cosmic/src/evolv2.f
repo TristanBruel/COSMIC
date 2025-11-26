@@ -1352,8 +1352,8 @@ component.
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2),
      &                      deltam1_bcm,deltam2_bcm,formation(1),
-     &                      formation(2),binstate,mergertype,
-     &                      caseMT(1),caseMT(2),'bpp')
+     &                      formation(2),caseMT(1),caseMT(2),
+     &                      binstate,mergertype,'bpp')
                CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
      &                  0.d0,fallback,sigmahold,kick_info,disrupt,bkick)
 
@@ -1393,8 +1393,8 @@ component.
      &                       bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                       epoch(2),bhspin(1),bhspin(2),
      &                       deltam1_bcm,deltam2_bcm,formation(1),
-     &                       formation(2),binstate,mergertype,
-     &                       caseMT(1),caseMT(2),'bpp')
+     &                       formation(2),caseMT(1),caseMT(2),
+     &                       binstate,mergertype,'bpp')
 
                CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
      &              rad(3-k),fallback,sigmahold,kick_info,disrupt,bkick)
@@ -1610,8 +1610,8 @@ component.
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                  epoch(2),bhspin(1),bhspin(2),
      &                  deltam1_bcm,deltam2_bcm,formation(1),
-     &                  formation(2),binstate,mergertype,
-     &                  caseMT(1),caseMT(2),'bpp')
+     &                  formation(2),caseMT(1),caseMT(2),
+     &                  binstate,mergertype,'bpp')
          if(snova)then
             bpp(jp,11) = 2.0
             dtm = 0.d0
@@ -1675,8 +1675,8 @@ component.
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                    epoch(2),bhspin(1),bhspin(2),
      &                    deltam1_bcm,deltam2_bcm,formation(1),
-     &                    formation(2),binstate,mergertype,
-     &                    caseMT(1),caseMT(2),'bcm')
+     &                    formation(2),caseMT(1),caseMT(2),
+     &                    binstate,mergertype,'bcm')
             if(isave) tsave = tsave + dtp
             if(output) write(*,*)'bcm1',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
@@ -1832,8 +1832,8 @@ component.
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2),
      &                 deltam1_bcm,deltam2_bcm,formation(1),
-     &                 formation(2),binstate,mergertype,
-     &                 caseMT(1),caseMT(2),'bpp')
+     &                 formation(2),caseMT(1),caseMT(2),
+     &                 binstate,mergertype,'bpp')
       endif
 *
       iter = iter + 1
@@ -1924,8 +1924,8 @@ component.
      &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &              epoch(2),bhspin(1),bhspin(2),
      &              deltam1_bcm,deltam2_bcm,formation(1),
-     &              formation(2),binstate,mergertype,
-     &              caseMT(1),caseMT(2),'bpp')
+     &              formation(2),caseMT(1),caseMT(2),
+     &              binstate,mergertype,'bpp')
 *
       if(check_dtp.eq.1)then
           CALL checkstate(dtp,dtp_original,tsave,tphys,tphysf,
@@ -1981,8 +1981,8 @@ component.
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                  epoch(2),bhspin(1),bhspin(2),
      &                  deltam1_bcm,deltam2_bcm,formation(1),
-     &                  formation(2),binstate,mergertype,
-     &                  caseMT(1),caseMT(2),'bcm')
+     &                  formation(2),caseMT(1),caseMT(2),
+     &                  binstate,mergertype,'bcm')
          if(output) write(*,*)'bcm2:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
 *     & mass(2),rad(1),rad(2),ospin(1),ospin(2),b01_bcm,b02_bcm,jspin(1)
@@ -2423,8 +2423,8 @@ component.
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2),
      &                 deltam1_bcm,deltam2_bcm,formation(1),
-     &                 formation(2),binstate,mergertype,
-     &                 caseMT(1),caseMT(2),'bpp')
+     &                 formation(2),caseMT(1),caseMT(2),
+     &                 binstate,mergertype,'bpp')
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
@@ -2548,8 +2548,8 @@ component.
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2),
      &                 deltam1_bcm,deltam2_bcm,formation(1),
-     &                 formation(2),binstate,mergertype,
-     &                 caseMT(1),caseMT(2),'bpp')
+     &                 formation(2),caseMT(1),caseMT(2),
+     &                 binstate,mergertype,'bpp')
 *
          epoch(j1) = tphys - aj(j1)
          com = .false.
@@ -3672,8 +3672,8 @@ component.
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                    epoch(2),bhspin(1),bhspin(2),
      &                    deltam1_bcm,deltam2_bcm,formation(1),
-     &                    formation(2),binstate,mergertype,
-     &                    caseMT(1),caseMT(2),'bpp')
+     &                    formation(2),caseMT(1),caseMT(2),
+     &                    binstate,mergertype,'bpp')
             CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
      &              rad(3-k),fallback,sigmahold,kick_info,disrupt,bkick)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
@@ -3814,8 +3814,8 @@ component.
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                  epoch(2),bhspin(1),bhspin(2),
      &                  deltam1_bcm,deltam2_bcm,formation(1),
-     &                  formation(2),binstate,mergertype,
-     $                  caseMT(1),caseMT(2),'bcm')
+     &                  formation(2),caseMT(1),caseMT(2),
+     &                  binstate,mergertype,'bcm')
          if(isave) tsave = tsave + dtp
          if(output) write(*,*)'bcm3:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1)
@@ -3860,8 +3860,8 @@ component.
      &                    bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                    epoch(2),bhspin(1),bhspin(2),
      &                    deltam1_bcm,deltam2_bcm,formation(1),
-     &                    formation(2),binstate,mergertype,
-     &                    caseMT(1),caseMT(2),'bpp')
+     &                    formation(2),caseMT(1),caseMT(2),
+     &                    binstate,mergertype,'bpp')
       endif
 
 *
@@ -3909,8 +3909,8 @@ component.
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2),
      &                 deltam1_bcm,deltam2_bcm,formation(1),
-     &                 formation(2),binstate,mergertype,
-     &                 caseMT(1),caseMT(2),'bpp')
+     &                 formation(2),caseMT(1),caseMT(2),
+     &                 binstate,mergertype,'bpp')
          dtm = 0.d0
          goto 4
       endif
@@ -3961,8 +3961,8 @@ component.
      &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &              epoch(2),bhspin(1),bhspin(2),
      &              deltam1_bcm,deltam2_bcm,formation(1),
-     &              formation(2),binstate,mergertype,
-     &              caseMT(1),caseMT(2),'bpp')
+     &              formation(2),caseMT(1),caseMT(2),
+     &              binstate,mergertype,'bpp')
 *
       kcomp1 = kstar(j1)
       kcomp2 = kstar(j2)
@@ -4009,8 +4009,8 @@ component.
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2),
      &                 deltam1_bcm,deltam2_bcm,formation(1),
-     &                 formation(2),binstate,mergertype,
-     &                 caseMT(1),caseMT(2),'bpp')
+     &                 formation(2),caseMT(1),caseMT(2),
+     &                 binstate,mergertype,'bpp')
          CALL comenv(mass0(j1),mass(j1),massc(j1),aj(j1),jspin(j1),
      &               kstar(j1),mass0(j2),mass(j2),massc(j2),aj(j2),
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
@@ -4094,8 +4094,8 @@ component.
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2),
      &                 deltam1_bcm,deltam2_bcm,formation(1),
-     &                 formation(2),binstate,mergertype,
-     &                 caseMT(1),caseMT(2),'bpp')
+     &                 formation(2),caseMT(1),caseMT(2),
+     &                 binstate,mergertype,'bpp')
          CALL comenv(mass0(j2),mass(j2),massc(j2),aj(j2),jspin(j2),
      &               kstar(j2),mass0(j1),mass(j1),massc(j1),aj(j1),
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j2,j1,
@@ -4184,8 +4184,8 @@ component.
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                  epoch(2),bhspin(1),bhspin(2),
      &                  deltam1_bcm,deltam2_bcm,formation(1),
-     &                  formation(2),binstate,mergertype,
-     &                  caseMT(1),caseMT(2),'bpp')
+     &                  formation(2),caseMT(1),caseMT(2),
+     &                  binstate,mergertype,'bpp')
       endif
       epoch(1) = tphys - aj(1)
       epoch(2) = tphys - aj(2)
@@ -4242,8 +4242,8 @@ component.
      &                 bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                 epoch(2),bhspin(1),bhspin(2),
      &                 deltam1_bcm,deltam2_bcm,formation(1),
-     &                 formation(2),binstate,mergertype,
-     &                 caseMT(1),caseMT(2),'bpp')
+     &                 formation(2),caseMT(1),caseMT(2),
+     &                 binstate,mergertype,'bpp')
          dtm = 0.d0
 *
 * Reset orbital parameters as separation may have changed.
@@ -4316,8 +4316,8 @@ component.
      &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                        epoch(2),bhspin(1),bhspin(2),
      &                        deltam1_bcm,deltam2_bcm,formation(1),
-     &                        formation(2),binstate,mergertype,
-     &                        caseMT(1),caseMT(2),'bpp')
+     &                        formation(2),caseMT(1),caseMT(2),
+     &                        binstate,mergertype,'bpp')
             elseif(ecc.gt.1.d0)then
 *
 * Binary dissolved by a supernova or tides.
@@ -4359,8 +4359,8 @@ component.
      &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                        epoch(2),bhspin(1),bhspin(2),
      &                        deltam1_bcm,deltam2_bcm,formation(1),
-     &                        formation(2),binstate,mergertype,
-     &                        caseMT(1),caseMT(2),'bpp')
+     &                        formation(2),caseMT(1),caseMT(2),
+     &                        binstate,mergertype,'bpp')
             else
                 evolve_type = 9.0
                 teff1 = 1000.d0*((1130.d0*lumin(1)/
@@ -4394,8 +4394,8 @@ component.
      &                        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                        epoch(2),bhspin(1),bhspin(2),
      &                        deltam1_bcm,deltam2_bcm,formation(1),
-     &                        formation(2),binstate,mergertype,
-     &                        caseMT(1),caseMT(2),'bpp')
+     &                        formation(2),caseMT(1),caseMT(2),
+     &                        binstate,mergertype,'bpp')
             endif
          endif
          if(kstar(2).eq.15)then
@@ -4477,8 +4477,8 @@ component.
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                  epoch(2),bhspin(1),bhspin(2),
      &                  deltam1_bcm,deltam2_bcm,formation(1),
-     &                  formation(2),binstate,mergertype,
-     &                  caseMT(1),caseMT(2),'bpp')
+     &                  formation(2),caseMT(1),caseMT(2),
+     &                  binstate,mergertype,'bpp')
           endif
           
 *          if(kstar(1).eq.15.and.bpp(jp,4).lt.15.0)then
@@ -4522,8 +4522,8 @@ component.
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2),
      &                      deltam1_bcm,deltam2_bcm,formation(1),
-     &                      formation(2),binstate,mergertype,
-     &                      caseMT(1),caseMT(2),'bpp')
+     &                      formation(2),caseMT(1),caseMT(2),
+     &                      binstate,mergertype,'bpp')
           elseif(kstar(1).eq.15.and.kstar(2).eq.15)then
 *
 * Cases of accretion induced supernova or single star supernova.
@@ -4561,8 +4561,8 @@ component.
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2),
      &                      deltam1_bcm,deltam2_bcm,formation(1),
-     &                      formation(2),binstate,mergertype,
-     &                      caseMT(1),caseMT(2),'bpp')
+     &                      formation(2),caseMT(1),caseMT(2),
+     &                      binstate,mergertype,'bpp')
           else
               evolve_type = 10.0
               !added by PA for systems that stop evolving halfway
@@ -4600,8 +4600,8 @@ component.
      &                      bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                      epoch(2),bhspin(1),bhspin(2),
      &                      deltam1_bcm,deltam2_bcm,formation(1),
-     &                      formation(2),binstate,mergertype,
-     &                      caseMT(1),caseMT(2),'bpp')
+     &                      formation(2),caseMT(1),caseMT(2),
+     &                      binstate,mergertype,'bpp')
           endif
       endif
 *
@@ -4662,8 +4662,8 @@ component.
      &                  bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
      &                  epoch(2),bhspin(1),bhspin(2),
      &                  deltam1_bcm,deltam2_bcm,formation(1),
-     &                  formation(2),binstate,mergertype,
-     &                  caseMT(1),caseMT(2),'bcm')
+     &                  formation(2),caseMT(1),caseMT(2),
+     &                  binstate,mergertype,'bcm')
          if(output) write(*,*)'bcm4:',kstar(1),kstar(2),mass(1),
      & mass(2),rad(1),rad(2),ospin(1),ospin(2),jspin(1),
      & tphys,tphysf
