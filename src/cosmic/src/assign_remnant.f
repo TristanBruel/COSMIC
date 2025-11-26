@@ -239,8 +239,6 @@
 * Use the Explodability Criteria from (Maltsev et al. 2025, A&A, 700,A20)
 * with linear interpolation of the fallback fraction between direct BHs and NSs
 *
-*                    Always Neutron Stars
-                     if(mc.lt.5.62d0)then
                      CALL writetab(jp,0.0d0,15.d0,
      &                       0.d0,0.d0,0,0,
      &                       0.d0,0.d0,0.d0,0.d0,0.d0,
@@ -335,8 +333,6 @@
 * Model B from (Maltsev et al. 2025, A&A, 700,A20)
 * with the Remnant Mass Relation from (Ugolini et al. 2025, A&A, 695,A122)
 *
-*                    Always Neutron Stars
-                     if(mc.lt.5.62d0)then
                      CALL writetab(jp,0.0d0,15.d0,
      &                       0.d0,0.d0,0,0,
      &                       0.d0,0.d0,0.d0,0.d0,0.d0,
