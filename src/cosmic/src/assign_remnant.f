@@ -240,7 +240,7 @@
 * with linear interpolation of the fallback fraction between direct BHs and NSs
 *
                      CALL writetab(jp,0.0d0,15.d0,
-     &                       0.d0,0.d0,0,0,
+     &                       mt,mt,0,0,
      &                       0.d0,0.d0,0.d0,0.d0,0.d0,
      &                       0.d0,0.d0,0.d0,0.d0,
      &                       mc,mc,0.d0,0.d0,
@@ -251,7 +251,7 @@
      &                       0.d0,0.d0,0.d0,0.d0,
      &                       0.d0,0.d0,0.d0,0.d0,
      &                       0.d0,0.d0,
-     &                       0,0,0,0,0,0,'bpp')
+     &                       0,0,caseMT,caseMT,0,0,'bpp')
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
                         fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
@@ -334,7 +334,7 @@
 * with the Remnant Mass Relation from (Ugolini et al. 2025, A&A, 695,A122)
 *
                      CALL writetab(jp,0.0d0,15.d0,
-     &                       0.d0,0.d0,0,0,
+     &                       mt,mt,0,0,
      &                       0.d0,0.d0,0.d0,0.d0,0.d0,
      &                       0.d0,0.d0,0.d0,0.d0,
      &                       mc,mc,0.d0,0.d0,
@@ -345,7 +345,7 @@
      &                       0.d0,0.d0,0.d0,0.d0,
      &                       0.d0,0.d0,0.d0,0.d0,
      &                       0.d0,0.d0,
-     &                       0,0,0,0,0,0,'bpp')
+     &                       0,0,caseMT,caseMT,0,0,'bpp')
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
                         fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
