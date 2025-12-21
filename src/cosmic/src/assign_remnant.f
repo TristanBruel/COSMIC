@@ -239,6 +239,17 @@
 * Use the Explodability Criteria from (Maltsev et al. 2025, A&A, 700,A20)
 * with linear interpolation of the fallback fraction between direct BHs and NSs
 *
+*                    Get the proto-core mass
+                     if(mc.le.3.5d0)then
+                        mcx = 1.2d0
+                     elseif(mc.le.6.d0)then
+                        mcx = 1.3d0
+                     elseif(mc.le.11.d0)then
+                        mcx = 1.4d0
+                     elseif(mc.gt.11.d0)then
+                        mcx = 1.6d0
+                     endif
+
                      CALL writetab(jp,0.0d0,15.d0,
      &                       mt,mt,0,0,
      &                       0.d0,0.d0,0.d0,0.d0,0.d0,
@@ -319,11 +330,13 @@
 *                          Neutron Stars
                            if(xx.gt.0.15d0)then
                               fallback = MIN(fallback,mxns/mt)
-                              mt = fallback*mt
+*                             mt = fallback*mt
+                              mt = mcx + fallback*(mt - mcx)
 *                          Black Holes
                            else
                               fallback = MAX(fallback,(mxns+1d0)/mt)
-                              mt = fallback*mt
+*                             mt = fallback*mt
+                              mt = mcx + fallback*(mt - mcx)
                            endif
                         endif
                      endif
