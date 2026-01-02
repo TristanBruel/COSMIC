@@ -265,8 +265,7 @@
      &                       0,0,caseMT,caseMT,0,0,'bpp')
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
-                        fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
-                        mt = fallback*mt
+                        mt = mxns
 *                    Always Black Holes
                      elseif(mc.gt.16.18d0)then
                         fallback = 1.d0
@@ -305,15 +304,13 @@
 *                       Range in which Mco lies:
 *                       Neutron Stars
                         if(mc.lt.Mco1)then
-                           fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
-                           mt = fallback*mt
+                           mt = mxns
 *                       Black Holes - direct collapse
                         elseif(mc.ge.Mco1 .and. mc.le.Mco2)then
                            fallback = 1.d0
 *                       Neutron Stars
                         elseif(mc.ge.McoNS1 .and. mc.le.McoNS2)then
-                           fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
-                           mt = fallback*mt
+                           mt = mxns
 *                       Black Holes - direct collapse
                         elseif(mc.gt.Mco3)then
                            fallback = 1.d0
@@ -329,9 +326,7 @@
                            xx = ran3(idum1)
 *                          Neutron Stars
                            if(xx.gt.0.15d0)then
-                              fallback = MIN(fallback,mxns/mt)
-*                             mt = fallback*mt
-                              mt = mcx + fallback*(mt - mcx)
+                           mt = mxns
 *                          Black Holes
                            else
                               fallback = MAX(fallback,(mxns+1d0)/mt)
