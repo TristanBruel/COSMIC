@@ -203,6 +203,20 @@
                         mcx = 1.6d0
                      endif
 
+                     CALL writetab(jp,0.0d0,15.d0,
+     &                       mt,mt,0,0,
+     &                       0.d0,0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       mc,mc,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,0.d0,0.d0,
+     &                       0.d0,0.d0,
+     &                       0,0,caseMT,caseMT,0,0,'bpp')
+
                      if(ecsn.gt.0.d0.and.mcbagb.le.ecsn.and.
      &                    mcbagb.ge.ecsn_mlow)then
                         mt = 1.38d0   ! ECSN fixed mass, no fallback
@@ -263,6 +277,7 @@
      &                       0.d0,0.d0,0.d0,0.d0,
      &                       0.d0,0.d0,
      &                       0,0,caseMT,caseMT,0,0,'bpp')
+
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
                         mt = mxns
@@ -345,6 +360,7 @@
 * Model B from (Maltsev et al. 2025, A&A, 700,A20)
 * with the Remnant Mass Relation from (Ugolini et al. 2025, A&A, 695,A122)
 *
+
                      CALL writetab(jp,0.0d0,15.d0,
      &                       mt,mt,0,0,
      &                       0.d0,0.d0,0.d0,0.d0,0.d0,
@@ -358,6 +374,7 @@
      &                       0.d0,0.d0,0.d0,0.d0,
      &                       0.d0,0.d0,
      &                       0,0,caseMT,caseMT,0,0,'bpp')
+
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
                         fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
