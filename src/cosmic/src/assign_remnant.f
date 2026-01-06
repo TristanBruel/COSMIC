@@ -306,31 +306,35 @@
                         if(mc.lt.Mco1)then
                            mt = mxns
 *                       Black Holes - direct collapse
-                        elseif(mc.ge.Mco1 .and. mc.le.Mco2)then
+                        elseif(mc.ge.Mco1 .and. mc.lt.Mco2)then
                            fallback = 1.d0
 *                       Neutron Stars
-                        elseif(mc.ge.McoNS1 .and. mc.le.McoNS2)then
+                        elseif(mc.ge.McoNS1 .and. mc.lt.McoNS2)then
                            mt = mxns
 *                       Black Holes - direct collapse
-                        elseif(mc.gt.Mco3)then
+                        elseif(mc.ge.Mco3)then
                            fallback = 1.d0
 *                       Either Neutron Stars or Black Holes
-                        else
-                           if(mc.le.McoNS1)then
-                              fallback = (mc-McoNS1)/(Mco2-McoNS1)
-                              fallback = 0.1d0+0.8d0*fallback
-                           else
-                              fallback = (mc-McoNS2)/(Mco3-McoNS2)
-                              fallback = 0.1d0+0.8d0*fallback
-                           endif
+                        elseif(mc.ge.Mco2 .and. mc.lt.McoNS1)then
                            xx = ran3(idum1)
 *                          Neutron Stars
                            if(xx.gt.0.15d0)then
-                           mt = mxns
+                              mt = mxns
 *                          Black Holes
                            else
-                              fallback = MAX(fallback,(mxns+1d0)/mt)
-*                             mt = fallback*mt
+                              fallback = (mc-McoNS1)/(Mco2-McoNS1)
+                              fallback = 0.2d0+0.8d0*fallback
+                              mt = mcx + fallback*(mt - mcx)
+                           endif
+                        else
+                           xx = ran3(idum1)
+*                          Neutron Stars
+                           if(xx.gt.0.15d0)then
+                              mt = mxns
+*                          Black Holes
+                           else
+                              fallback = (mc-McoNS2)/(Mco3-McoNS2)
+                              fallback = 0.2d0+0.8d0*fallback
                               mt = mcx + fallback*(mt - mcx)
                            endif
                         endif
