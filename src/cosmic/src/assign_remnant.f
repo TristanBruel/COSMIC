@@ -1,10 +1,12 @@
 ***
       SUBROUTINE assign_remnant(zpars,mc,mcbagb,mass,mt,kw,bhspin,kidx,
-     &                          met,caseMT,jp)
+     &                          met,caseMT)
       IMPLICIT NONE
       INCLUDE 'const_bse.h'
       
       common /fall/fallback
+*      REAL*8 mass_preSN, mHe_preSN, massc_preSN
+*      COMMON mass_preSN, mHe_preSN, massc_preSN
       REAL*8 fallback
       REAL ran3,xx
       EXTERNAL ran3
@@ -14,7 +16,7 @@
       real*8 mc,mcbagb,mass,mt,met
       real*8 frac,kappa,sappa,alphap,polyfit
       real*8 mcx, bhspin,mrem,mch
-      integer kw,kidx,caseMT,jp
+      integer kw,kidx,caseMT
       real*8 logz
       real*8 Mco1,Mco2,Mco3,McoNS1,McoNS2
 
@@ -73,6 +75,10 @@
                mass = mt
 *
             else
+* Store values in common block
+*               mass_preSN = mt
+*               mHe_preSN = mc_he(kidx)
+*               massc_preSN = mc_co(kidx)
                if(ecsn.gt.0.d0.and.mcbagb.lt.ecsn_mlow)then
 *
 * Star is not massive enough to ignite C burning.
@@ -203,20 +209,6 @@
                         mcx = 1.6d0
                      endif
 
-                     CALL writetab(jp,0.0d0,15.d0,
-     &                       mt,mt,0,0,
-     &                       0.d0,0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       mc,mc,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,
-     &                       0,0,caseMT,caseMT,0,0,'bpp')
-
                      if(ecsn.gt.0.d0.and.mcbagb.le.ecsn.and.
      &                    mcbagb.ge.ecsn_mlow)then
                         mt = 1.38d0   ! ECSN fixed mass, no fallback
@@ -263,20 +255,6 @@
                      elseif(mc.gt.11.d0)then
                         mcx = 1.6d0
                      endif
-
-                     CALL writetab(jp,0.0d0,15.d0,
-     &                       mt,mt,0,0,
-     &                       0.d0,0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       mc,mc,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,
-     &                       0,0,caseMT,caseMT,0,0,'bpp')
 
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
@@ -360,20 +338,6 @@
 * Model B from (Maltsev et al. 2025, A&A, 700,A20)
 * with the Remnant Mass Relation from (Ugolini et al. 2025, A&A, 695,A122)
 *
-
-                     CALL writetab(jp,0.0d0,15.d0,
-     &                       mt,mt,0,0,
-     &                       0.d0,0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       mc,mc,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,0.d0,0.d0,
-     &                       0.d0,0.d0,
-     &                       0,0,caseMT,caseMT,0,0,'bpp')
 
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
