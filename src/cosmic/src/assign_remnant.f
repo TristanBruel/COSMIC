@@ -268,7 +268,7 @@
 *                       Value of solar metallicity from Asplund et al. 2009
 *                       extrapolate only between 1/20 and 1 [Zsun]
                         logz=MAX(log10(met/0.01432d0),log10(1.d0/20.d0))
-                        logz=MIN(logz,0.d0)
+*                       logz=MIN(logz,0.d0)
                         if(caseMT.eq.1)then
                            Mco1 = 7.4d0 + (7.4d0-6.9d0)*logz
                            Mco2 = 8.4d0 + (8.4d0-7.4d0)*logz
@@ -341,8 +341,7 @@
 
 *                    Always Neutron Stars
                      if(mc.lt.5.62d0)then
-                        fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
-                        mt = fallback*mt
+                        mt = mxns
 *                    Always Black Holes
                      elseif(mc.gt.16.18d0)then
                         fallback = 1.d0
@@ -352,29 +351,41 @@
 *                       Value of solar metallicity from Asplund et al. 2009
 *                       extrapolate only between 1/20 and 1 [Zsun]
                         logz=MAX(log10(met/0.01432d0),log10(1.d0/20.d0))
-                        logz=MIN(logz,0.d0)
+*                       logz=MIN(logz,0.d0)
                         if(caseMT.eq.1)then
                            Mco1 = 7.4d0 + (7.4d0-6.9d0)*logz
                            Mco2 = 8.4d0 + (8.4d0-7.4d0)*logz
                            Mco3 = 15.4d0 + (15.4d0-13.7d0)*logz
+                           fallback = 0.0001042d0*mc**3d0
+     &                               -0.007129d0*mc**2d0
+     &                               +0.1626*mc
+     &                               -0.2194
                         elseif(caseMT.eq.2)then
                            Mco1 = 7.7d0 + (7.7d0-6.9d0)*logz
                            Mco2 = 8.3d0 + (8.3d0-7.9d0)*logz
                            Mco3 = 15.2d0 + (15.2d0-13.7d0)*logz
+                           fallback = 0.0001042d0*mc**3d0
+     &                               -0.007129d0*mc**2d0
+     &                               +0.1626*mc
+     &                               -0.2194
                         elseif(caseMT.eq.3)then
                            Mco1 = 6.6d0 + (6.6d0-6.3d0)*logz
                            Mco2 = 7.1d0 + (7.1d0-7.1d0)*logz
                            Mco3 = 13.2d0 + (13.2d0-12.3d0)*logz
+                           fallback = 0.0001042d0*mc**3d0
+     &                               -0.007129d0*mc**2d0
+     &                               +0.1626*mc
+     &                               -0.2194
                         else
                            Mco1 = 6.6d0 + (6.6d0-6.1d0)*logz
                            Mco2 = 7.2d0 + (7.2d0-6.6d0)*logz
                            Mco3 = 13.0d0 + (13.0d0-12.9d0)*logz
+                           fallback = 0.06d0*mc-0.03d0
                         endif
 *                       Range in which Mco lies:
 *                       Neutron Stars
                         if(mc.lt.Mco1)then
-                           fallback = MIN(0.06d0*mc-0.03d0,mxns/mt)
-                           mt = fallback*mt
+                           mt = mxns
 *                       Black Holes - direct collapse
                         elseif(mc.ge.Mco1 .and. mc.le.Mco2)then
                            fallback = 1.d0
@@ -384,15 +395,13 @@
 *                       Either Neutron Stars or Black Holes
                         else
                            xx = ran3(idum1)
-                           fallback=MAX(0.06d0*mc-0.03d0,0.1d0)
+                           fallback=MAX(fallback,0.1d0)
 *                          Neutron Stars
                            if(xx.gt.0.1d0)then
-                              fallback = MIN(fallback,mxns/mt)
-                              mt = fallback*mt
+                              mt = mxns
 *                          Black Holes
                            else
-                              fallback = MAX(fallback,(mxns+1d0)/mt)
-                              mt = fallback*mt
+                              mt = MAX(fallback*mt,mxns+1.0d0)
                            endif
                         endif
                      mc = mt
