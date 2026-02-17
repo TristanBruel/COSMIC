@@ -100,10 +100,10 @@ INITIAL_CONDITIONS_BSE_COLUMNS = ['neta', 'bwind', 'hewind', 'alpha1', 'lambdaf'
                                   'cekickflag', 'cemergeflag', 'cehestarflag',
                                   'mxns', 'pts1', 'pts2', 'pts3',
                                   'ecsn', 'ecsn_mlow', 'aic', 'ussn', 'sigma', 'sigmadiv',
-                                  'bhsigmafrac', 'polar_kick_angle',
+                                  'bhsigmafrac', 'polar_kick_angle', 'mm_mu_ns', 'mm_mu_bh',
                                   'natal_kick_array', 'qcrit_array',
                                   'beta', 'xi', 'acc2', 'epsnov',
-                                  'eddfac', 'gamma', 'don_lim', 'acc_lim', 
+                                  'eddfac', 'gamma', 'don_lim', 'acc_lim',
                                   'bdecayfac', 'bconst', 'ck',
                                   'windflag', 'qcflag', 'eddlimflag',
                                   'fprimc_array', 'dtp', 'randomseed',
@@ -284,42 +284,59 @@ class Evolve(object):
         if 'bin_num' not in initialbinarytable.keys():
             initialbinarytable = initialbinarytable.assign(bin_num=np.arange(idx, idx + len(initialbinarytable)))
 
-        for k, v in BSEDict.items():
-            if k in initialbinarytable.keys():
-                warnings.warn("The value for {0} in initial binary table is being "
-                              "overwritten by the value of {0} from either the params "
-                              "file or the BSEDict.".format(k))
-            # special columns that need to be handled differently
+        # go through each item in the BSEDict and update the initialbinarytable
+        new_cols = {}
+        n = len(initialbinarytable)
+        idx = initialbinarytable.index
+
+        for k, v in list(BSEDict.items()):
+            # warn the user if they are overwriting a value
+            if k in initialbinarytable.columns:
+                warnings.warn(
+                    "The value for {0} in initial binary table is being overwritten by the value of {0} "
+                    "from either the params file or the BSEDict.".format(k)
+                )
+            # handle special cases where we need to expand arrays into multiple columns
             if k == 'natal_kick_array':
-                assign_natal_kick_array = [BSEDict['natal_kick_array']] * len(initialbinarytable)
-                initialbinarytable = initialbinarytable.assign(natal_kick_array=assign_natal_kick_array)
-                for idx, column_name in enumerate(NATAL_KICK_COLUMNS):
-                    for sn_idx in range(2):
-                        column_name_sn = column_name + '_{0}'.format(sn_idx + 1)
-                        column_values = pd.Series([BSEDict['natal_kick_array'][sn_idx][idx]] * len(initialbinarytable),
-                                                  index=initialbinarytable.index,
-                                                  name=column_name_sn)
-                        kwargs1 = {column_name_sn: column_values}
-                        initialbinarytable = initialbinarytable.assign(**kwargs1)
+                initialbinarytable["natal_kick_array"] = [BSEDict['natal_kick_array']] * n
+                for j, column_name in enumerate(NATAL_KICK_COLUMNS):
+                    for sn in range(2):
+                        col = f"{column_name}_{sn+1}"
+                        if col in initialbinarytable.columns:
+                            initialbinarytable[col] = BSEDict['natal_kick_array'][sn][j]
+                        else:
+                            new_cols[col] = BSEDict['natal_kick_array'][sn][j]
+
             elif k == 'qcrit_array':
-                initialbinarytable = initialbinarytable.assign(qcrit_array=[BSEDict['qcrit_array']] * len(initialbinarytable))
-                for kstar in range(0, 16):
-                    columns_values = pd.Series([BSEDict['qcrit_array'][kstar]] * len(initialbinarytable),
-                                               index=initialbinarytable.index,
-                                               name='qcrit_{0}'.format(kstar))
-                    initialbinarytable.loc[:, 'qcrit_{0}'.format(kstar)] = columns_values
+                initialbinarytable["qcrit_array"] = [BSEDict['qcrit_array']] * n
+                for kstar in range(16):
+	
+                    col = f"qcrit_{kstar}"
+                    if col in initialbinarytable.columns:
+                        initialbinarytable[col] = BSEDict['qcrit_array'][kstar]
+                    else:
+                        new_cols[col] = BSEDict['qcrit_array'][kstar]
+
             elif k == 'fprimc_array':
-                columns_values = [BSEDict['fprimc_array']] * len(initialbinarytable)
-                initialbinarytable = initialbinarytable.assign(fprimc_array=columns_values)
-                for kstar in range(0, 16):
-                    columns_values = pd.Series([BSEDict['fprimc_array'][kstar]] * len(initialbinarytable),
-                                               index=initialbinarytable.index,
-                                               name='fprimc_{0}'.format(kstar))
-                    initialbinarytable.loc[:, 'fprimc_{0}'.format(kstar)] = columns_values
+                initialbinarytable["fprimc_array"] = [BSEDict['fprimc_array']] * n
+                for kstar in range(16):
+                    col = f"fprimc_{kstar}"
+                    if col in initialbinarytable.columns:
+                        initialbinarytable[col] = BSEDict['fprimc_array'][kstar]
+                    else:
+                        new_cols[col] = BSEDict['fprimc_array'][kstar]
             else:
-                # assigning values this way work for most of the parameters.
-                kwargs1 = {k: v}
-                initialbinarytable = initialbinarytable.assign(**kwargs1)
+                # base case: if it's present, overwrite, if not, add to a list of new columns (see below)
+                if k in initialbinarytable.columns:
+                    initialbinarytable[k] = v
+                else:
+                    new_cols[k] = v
+
+        # for columns that are new to the initial binary table, concat once
+        if new_cols:
+            new_df = pd.DataFrame(new_cols, index=idx)
+            initialbinarytable = pd.concat([initialbinarytable, new_df], axis=1)
+
 
         # Here we perform two checks
         # First, if the BSE parameters are not in the initial binary table
@@ -417,10 +434,18 @@ class Evolve(object):
 
         natal_kick_arrays = np.vstack(output[:, 4])
         natal_kick_arrays = natal_kick_arrays.reshape(-1, 1, len(FLATTENED_NATAL_KICK_COLUMNS))
+
+        # update initial table with sampled kicks
+        to_add = {}
         for idx, column in enumerate(FLATTENED_NATAL_KICK_COLUMNS):
-            # assigning values this way work for most of the parameters.
-            kwargs1 = {column: natal_kick_arrays[:, :, idx]}
-            initialbinarytable = initialbinarytable.assign(**kwargs1)
+            if column not in initialbinarytable.columns:
+                to_add[column] = natal_kick_arrays[:, 0, idx]
+            else:
+                initialbinarytable[column] = natal_kick_arrays[:, 0, idx]
+        # if kicks weren't already present, add them
+        if to_add:
+            natal_kick_df = pd.DataFrame(to_add, index=initialbinarytable.index)
+            initialbinarytable = pd.concat([initialbinarytable, natal_kick_df], axis=1)
 
         kick_info = pd.DataFrame(kick_info_arrays,
                                  columns=KICK_COLUMNS,
@@ -517,6 +542,8 @@ def _evolve_single_system(f):
         _evolvebin.snvars.rembar_massloss = f["rembar_massloss"]
         _evolvebin.metvars.zsun = f["zsun"]
         _evolvebin.snvars.kickflag = f["kickflag"]
+        _evolvebin.snvars.mm_mu_ns = f["mm_mu_ns"]
+        _evolvebin.snvars.mm_mu_bh = f["mm_mu_bh"]
         _evolvebin.cmcpass.using_cmc = 0
 
         _evolvebin.col.n_col_bpp = f["n_col_bpp"]

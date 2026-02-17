@@ -73,7 +73,7 @@ REFF_TEST_ARRAY = np.array([3.94190562, 5.99895482])
 SINGLES_CMC_FITS, BINARIES_CMC_FITS = InitialCMCTable.read(filename=os.path.join(TEST_DATA_DIR, "input_cmc.fits"))
 SINGLES_CMC_HDF5, BINARIES_CMC_HDF5 = InitialCMCTable.read(filename=os.path.join(TEST_DATA_DIR, "input_cmc.hdf5"))
 
-def power_law_fit(data, n_bins=100):
+def power_law_fit(data, n_bins=100, return_intercept=False):
     def line(x, a, b):
         return x*a + b
     def center_bins(bins):
@@ -92,7 +92,10 @@ def power_law_fit(data, n_bins=100):
 
     slope, intercept = popt[0], popt[1]
 
-    return slope
+    if return_intercept:
+        return (slope, intercept)
+    else:
+        return slope
 
 def linear_fit(data):
     def line(x, a, b):
@@ -222,10 +225,8 @@ class TestSample(unittest.TestCase):
         self.assertEqual(binfrac.max(), VANHAAFTEN_BINFRAC_MAX)
         self.assertEqual(binfrac.min(), VANHAAFTEN_BINFRAC_MIN)
 
-        test_fracs = []
-        test_errs = []
         primary_mass = np.array([float(x) for x in np.logspace(np.log10(0.08), np.log10(150), num=100000)])
-        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=primary_mass, binfrac_model='offner22')
+        m1_b, m1_s, binfrac, bin_index = SAMPLECLASS.binary_select(primary_mass=primary_mass, binfrac_model='offner23')
         for i in range(len(OFFNER_MASS_RANGES)):
             low, high = OFFNER_MASS_RANGES[i][0], OFFNER_MASS_RANGES[i][1]
             offner_value = OFFNER_DATA[i]
@@ -317,6 +318,26 @@ class TestSample(unittest.TestCase):
         log_porb_sigma = np.std(np.log10(porb))
         self.assertTrue(np.round(log_porb_mean, 1) >= MEAN_RAGHAVAN-0.15)
         self.assertEqual(np.round(log_porb_sigma, 0), np.round(SIGMA_RAGHAVAN, 0))
+
+        # next check martinez26
+        porb,aRL_over_a = SAMPLECLASS.sample_porb(
+            mass1, mass2, rad1, rad2, 'martinez26', size=mass1.size
+        )
+        # the part of the model with m1 < 8 M_sun should follow the Raghavan10 distribution
+        porb_low_mass = porb[mass1 < 8]
+        log_porb_mean = np.mean(np.log10(porb_low_mass))
+        log_porb_sigma = np.std(np.log10(porb_low_mass))
+        self.assertTrue(np.round(log_porb_mean, 1) >= MEAN_RAGHAVAN-0.15)
+        self.assertEqual(np.round(log_porb_sigma, 0), np.round(SIGMA_RAGHAVAN, 0))
+        # the part of the model with m1 >= 8 M_sun should follow the same power law as Sana12
+        m1_high = mass1+8
+        rad1_high = SAMPLECLASS.set_reff(mass=m1_high, metallicity=0.02)
+        porb,aRL_over_a = SAMPLECLASS.sample_porb(
+            m1_high, mass2, rad1_high, rad2, 'martinez26', size=m1_high.size
+        )
+        porb_high_mass = porb[(m1_high >= 8) & (np.log10(porb) > 0.5)]
+        power_slope = power_law_fit(np.log10(porb_high_mass), n_bins=25)
+        self.assertEqual(np.round(power_slope, 2), SANA12_PORB_POWER_LAW)
 
         # next check moe19
         from cosmic.utils import get_met_dep_binfrac
@@ -517,6 +538,46 @@ class TestSample(unittest.TestCase):
                                                 size=None, total_mass=mass, sampling_target="total_mass",
                                                 trim_extra_samples=True)
             self.assertLessEqual(abs(samples[1] + samples[2] - mass), 300)
+
+    def test_m2min_qmin(self):
+        # ensure you can't sample with both qmin and m2_min
+        it_fails = False
+        try:
+            InitialBinaryTable.sampler('independent', np.arange(16), np.arange(16),
+                                       primary_model='kroupa01', ecc_model='thermal',
+                                       porb_model='sana12', binfrac_model=0.5,
+                                       SF_start=10.0, SF_duration=0.0, met=0.02,
+                                       size=1000,
+                                       qmin=0.1, m2_min=0.08)
+        except ValueError:
+            it_fails = True
+        self.assertTrue(it_fails)
+
+        # but it works if m2_min is None
+        it_fails = False
+        try:
+            InitialBinaryTable.sampler('independent', np.arange(16), np.arange(16),
+                                       primary_model='kroupa01', ecc_model='thermal',
+                                       porb_model='sana12', binfrac_model=0.5,
+                                       SF_start=10.0, SF_duration=0.0, met=0.02,
+                                       size=1000,
+                                       qmin=0.1, m2_min=None)
+        except ValueError:
+            it_fails = True
+        self.assertFalse(it_fails)
+
+        # and vice versa
+        it_fails = False
+        try:
+            InitialBinaryTable.sampler('independent', np.arange(16), np.arange(16),
+                                       primary_model='kroupa01', ecc_model='thermal',
+                                       porb_model='sana12', binfrac_model=0.5,
+                                       SF_start=10.0, SF_duration=0.0, met=0.02,
+                                       size=1000,
+                                       qmin=0, m2_min=0.08)
+        except FileNotFoundError:
+            it_fails = True
+        self.assertFalse(it_fails)
 
 class TestCMCSample(unittest.TestCase):
     def test_plummer_profile(self):

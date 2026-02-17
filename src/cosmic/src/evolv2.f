@@ -153,7 +153,7 @@
 *       ++++++++++++++++++++++++++++++++++++++++++++++++++
 ***
 *
-      INTEGER loop,iter,intpol,k,ip,jp,j1,j2
+      INTEGER loop,iter,intpol,k,ip,j1,j2
       INTEGER bcm_index_out, bpp_index_out
       INTEGER kcomp1,kcomp2,formation(2)
       PARAMETER(loop=20000)
@@ -421,7 +421,7 @@ component.
          CALL star(kstar(k),mass0(k),mass(k),tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(mass0(k),age,mass(k),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(k),mc,rc,me,re,k2,bhspin(k),k,
-     &               caseMT(k),jp)
+     &               caseMT(k))
          aj(k) = age
          epoch(k) = tphys - age
          rad(k) = rm
@@ -480,7 +480,7 @@ component.
 * Setup variables which control the output (if it is required).
 *
       ip = 0
-      jp = 0
+      bpp_ind = 0
 
       dtp_original = dtp
 
@@ -1229,7 +1229,7 @@ component.
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k,
-     &               caseMT(k),jp)
+     &               caseMT(k))
 *
          if(kw.ne.15)then
             ospin(k) = jspin(k)/(k2*(mt-mc)*rm*rm+k3*mc*rc*rc)
@@ -1343,7 +1343,7 @@ component.
                   b02_bcm = B(2)
                endif
 
-               CALL writetab(jp,tphys,evolve_type,
+               CALL writetab(bpp_ind,tphys,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),
      &                      sep,tb,ecc,rrl1,rrl2,
      &                      aj(1),aj(2),tms(1),tms(2),
@@ -1358,8 +1358,9 @@ component.
      &                      deltam1_bcm,deltam2_bcm,formation(1),
      &                      formation(2),caseMT(1),caseMT(2),
      &                      binstate,mergertype,z,'bpp')
-               CALL kick(kw,mass(k),mt,0.d0,0.d0,-1.d0,0.d0,vk,k,
-     &                  0.d0,fallback,sigmahold,kick_info,disrupt,bkick)
+               CALL kick(kw,mass(k),mc_co(k),mt,0.d0,0.d0,-1.d0,0.d0,
+     &                   vk,k,0.d0,fallback,sigmahold,kick_info,
+     &                   disrupt,bkick)
 
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
@@ -1385,7 +1386,7 @@ component.
                   b02_bcm = B(2)
                endif
 
-               CALL writetab(jp,tphys,evolve_type,
+               CALL writetab(bpp_ind,tphys,evolve_type,
      &                       mass(1),mass(2),kstar(1),kstar(2),
      &                       sep,tb,ecc,rrl1,rrl2,
      &                       aj(1),aj(2),tms(1),tms(2),
@@ -1401,8 +1402,9 @@ component.
      &                       formation(2),caseMT(1),caseMT(2),
      &                       binstate,mergertype,z,'bpp')
 
-               CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &              rad(3-k),fallback,sigmahold,kick_info,disrupt,bkick)
+               CALL kick(kw,mass(k),mc_co(k),mt,mass(3-k),ecc,sep,jorb,
+     &                   vk,k,rad(3-k),fallback,sigmahold,kick_info,
+     &                   disrupt,bkick)
                sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 * set kick values for the bcm array
                if(mass(3-k).lt.0.d0)then
@@ -1615,7 +1617,7 @@ component.
              b02_bcm = B(2)
           endif
 
-          CALL writetab(jp,tphys,evolve_type,
+          CALL writetab(bpp_ind,tphys,evolve_type,
      &                  mass(1),mass(2),kstar(1),kstar(2),sep,
      &                  tb,ecc,rrl1,rrl2,
      &                  aj(1),aj(2),tms(1),tms(2),
@@ -1631,7 +1633,6 @@ component.
      &                  formation(2),caseMT(1),caseMT(2),
      &                  binstate,mergertype,z,'bpp')
          if(snova)then
-            bpp(jp,11) = 2.0
             dtm = 0.d0
             goto 4
          endif
@@ -1849,7 +1850,7 @@ component.
             b02_bcm = B(2)
          endif
 
-         CALL writetab(jp,tphys,evolve_type,
+         CALL writetab(bpp_ind,tphys,evolve_type,
      &                 mass(1),mass(2),kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,
      &                 aj(1),aj(2),tms(1),tms(2),
@@ -1942,7 +1943,7 @@ component.
       else
          b02_bcm = B(2)
       endif
-      CALL writetab(jp,tphys,evolve_type,
+      CALL writetab(bpp_ind,tphys,evolve_type,
      &              mass(1),mass(2),kstar(1),kstar(2),sep,
      &              tb,ecc,rrl1,rrl2,
      &              aj(1),aj(2),tms(1),tms(2),
@@ -2442,7 +2443,7 @@ component.
             b02_bcm = B(2)
          endif
 
-         CALL writetab(jp,tphys,evolve_type,
+         CALL writetab(bpp_ind,tphys,evolve_type,
      &                 mass(1),mass(2),
      &                 kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,
@@ -2464,7 +2465,8 @@ component.
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,kick_info,formation(j1),formation(j2),sigmahold,
      &               bhspin(j1),bhspin(j2),binstate,mergertype,caseMT,
-     &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
+     &               bpp_ind,tphys,switchedCE,rad,tms,evolve_type,
+     &               disrupt,
      &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,
      &               deltam1_bcm,deltam2_bcm,z)
          if(j1.eq.2.and.kcomp2.eq.13.and.kstar(j2).eq.15.and.
@@ -2520,7 +2522,7 @@ component.
          CALL star(kstar(1),mass0(1),mass(1),tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(mass0(1),aj(1),mass(1),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(1),mc,rc,me,re,k2,bhspin(1),1,
-     &               caseMT(1),jp)
+     &               caseMT(1))
      
          rad(1) = rm
          lumin(1) = lum  
@@ -2535,7 +2537,7 @@ component.
          CALL star(kstar(2),mass0(2),mass(2),tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(mass0(2),aj(2),mass(2),tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kstar(2),mc,rc,me,re,k2,bhspin(2),2,
-     &               caseMT(2),jp)
+     &               caseMT(2))
      
          rad(2) = rm
          lumin(2) = lum  
@@ -2569,7 +2571,7 @@ component.
             b02_bcm = B(2)
          endif
 
-         CALL writetab(jp,tphys,evolve_type,
+         CALL writetab(bpp_ind,tphys,evolve_type,
      &                 mass1_bpp,mass2_bpp,
      &                 kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,
@@ -3624,7 +3626,7 @@ component.
          CALL star(kw,m0,mt,tm,tn,tscls,lums,GB,zpars)
          CALL hrdiag(m0,age,mt,tm,tn,tscls,lums,GB,zpars,
      &               rm,lum,kw,mc,rc,me,re,k2,bhspin(k),k,
-     &               caseMT(k),jp)
+     &               caseMT(k))
          pd = sep*(1.d0 - ecc)
          if(pd.lt.(rad(1)+rad(2))) goto 130
 
@@ -3695,7 +3697,7 @@ component.
                b02_bcm = B(2)
             endif
 
-            CALL writetab(jp,tphys,evolve_type,
+            CALL writetab(bpp_ind,tphys,evolve_type,
      &                    mass(1),mass(2),kstar(1),kstar(2),
      &                    sep,tb,ecc,rrl1,rrl2,
      &                    aj(1),aj(2),tms(1),tms(2),
@@ -3710,8 +3712,9 @@ component.
      &                    deltam1_bcm,deltam2_bcm,formation(1),
      &                    formation(2),caseMT(1),caseMT(2),
      &                    binstate,mergertype,z,'bpp')
-            CALL kick(kw,mass(k),mt,mass(3-k),ecc,sep,jorb,vk,k,
-     &              rad(3-k),fallback,sigmahold,kick_info,disrupt,bkick)
+            CALL kick(kw,mass(k),mc_co(k),mt,mass(3-k),ecc,sep,jorb,vk,
+     &                k,rad(3-k),fallback,sigmahold,kick_info,
+     &                disrupt,bkick)
             sigma = sigmahold !reset sigma after possible ECSN kick dist. Remove this if u want some kick link to the intial pulsar values...
 
             if(mass(3-k).lt.0.d0)then
@@ -3885,7 +3888,7 @@ component.
             b02_bcm = B(2)
          endif
 
-         CALL writetab(jp,tphys,evolve_type,
+         CALL writetab(bpp_ind,tphys,evolve_type,
      &                    mass(1),mass(2),kstar(1),kstar(2),
      &                    sep,tb,ecc,rrl1,rrl2,
      &                    aj(1),aj(2),tms(1),tms(2),
@@ -3935,7 +3938,7 @@ component.
             b02_bcm = B(2)
          endif
 
-         CALL writetab(jp,tphys,evolve_type,
+         CALL writetab(bpp_ind,tphys,evolve_type,
      &                 mass(1),mass(2),kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,
      &                 aj(1),aj(2),tms(1),tms(2),
@@ -3988,7 +3991,7 @@ component.
       else
          b02_bcm = B(2)
       endif
-      CALL writetab(jp,tphys,evolve_type,
+      CALL writetab(bpp_ind,tphys,evolve_type,
      &              mass(1),mass(2),kstar(1),kstar(2),sep,
      &              tb,ecc,rrl1,rrl2,
      &              aj(1),aj(2),tms(1),tms(2),
@@ -4036,7 +4039,7 @@ component.
             b02_bcm = B(2)
          endif
 
-         CALL writetab(jp,tphys,evolve_type,
+         CALL writetab(bpp_ind,tphys,evolve_type,
      &                 mass(1),mass(2),
      &                 kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,
@@ -4057,7 +4060,8 @@ component.
      &               jspin(j2),kstar(j2),zpars,ecc,sep,jorb,coel,j1,j2,
      &               vk,kick_info,formation(j1),formation(j2),sigmahold,
      &               bhspin(j1),bhspin(j2),binstate,mergertype,caseMT,
-     &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
+     &               bpp_ind,tphys,switchedCE,rad,tms,evolve_type,
+     &               disrupt,
      &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,
      &               deltam1_bcm,deltam2_bcm,z)
          if(output) write(*,*)'coal1:',tphys,kstar(j1),kstar(j2),coel,
@@ -4122,7 +4126,7 @@ component.
             b02_bcm = B(2)
          endif
 
-         CALL writetab(jp,tphys,evolve_type,
+         CALL writetab(bpp_ind,tphys,evolve_type,
      &                 mass(1),mass(2),
      &                 kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,
@@ -4143,7 +4147,8 @@ component.
      &               jspin(j1),kstar(j1),zpars,ecc,sep,jorb,coel,j2,j1,
      &               vk,kick_info,formation(j2),formation(j1),sigmahold,
      &               bhspin(j2),bhspin(j1),binstate,mergertype,caseMT,
-     &               jp,tphys,switchedCE,rad,tms,evolve_type,disrupt,
+     &               bpp_ind,tphys,switchedCE,rad,tms,evolve_type,
+     &               disrupt,
      &               lumin,B_0,bacc,tacc,epoch,menv,renv,bkick,
      &               deltam1_bcm,deltam2_bcm,z)
          if(output) write(*,*)'coal2:',tphys,kstar(j1),kstar(j2),coel,
@@ -4213,7 +4218,7 @@ component.
              b02_bcm = B(2)
           endif
 
-          CALL writetab(jp,tphys,evolve_type,
+          CALL writetab(bpp_ind,tphys,evolve_type,
      &                  mass1_bpp,mass2_bpp,
      &                  kstar(1),kstar(2),sep,
      &                  tb,ecc,rrl1,rrl2,
@@ -4273,7 +4278,7 @@ component.
             b02_bcm = B(2)
          endif
 
-         CALL writetab(jp,tphys,evolve_type,
+         CALL writetab(bpp_ind,tphys,evolve_type,
      &                 mass(1),mass(2),kstar(1),kstar(2),sep,
      &                 tb,ecc,rrl1,rrl2,
      &                 aj(1),aj(2),tms(1),tms(2),
@@ -4347,7 +4352,7 @@ component.
                 else
                    b02_bcm = B(2)
                 endif
-                CALL writetab(jp,tphys,evolve_type,
+                CALL writetab(bpp_ind,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),0.d0,
      &                        0.d0,-1.d0,0.d0,ngtv,
@@ -4391,7 +4396,7 @@ component.
                 else
                    b02_bcm = B(2)
                 endif
-                CALL writetab(jp,tphys,evolve_type,
+                CALL writetab(bpp_ind,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),sep,
      &                        tb,ecc,0.d0,ngtv2,
@@ -4427,7 +4432,7 @@ component.
                 else
                    b02_bcm = B(2)
                 endif
-                CALL writetab(jp,tphys,evolve_type,
+                CALL writetab(bpp_ind,tphys,evolve_type,
      &                        mass1_bpp,mass2_bpp,
      &                        kstar(1),kstar(2),0.d0,
      &                        0.d0,0.d0,0.d0,ngtv,
@@ -4489,7 +4494,7 @@ component.
 
           !added by PA for systems that manage to reach here
           !without encountering write bpp at all
-          if (jp<1) then
+          if (bpp_ind<1) then
               evolve_type = 1.d0
               rrl1 = rad(1)/rol(1)
               rrl2 = rad(2)/rol(2)
@@ -4512,7 +4517,7 @@ component.
                  b02_bcm = B(2)
               endif
 
-              CALL writetab(jp,tphys,evolve_type,
+              CALL writetab(bpp_ind,tphys,evolve_type,
      &                  mass(1),mass(2),kstar(1),kstar(2),sep,
      &                  tb,ecc,rrl1,rrl2,
      &                  aj(1),aj(2),tms(1),tms(2),
@@ -4529,11 +4534,11 @@ component.
      &                  binstate,mergertype,z,'bpp')
           endif
           
-*          if(kstar(1).eq.15.and.bpp(jp,4).lt.15.0)then
+*          if(kstar(1).eq.15.and.bpp(bpp_ind,4).lt.15.0)then
 *              mass1_bpp = mass0(1)
 *          endif
 
-*          if(kstar(2).eq.15.and.bpp(jp,5).lt.15.0)then
+*          if(kstar(2).eq.15.and.bpp(bpp_ind,5).lt.15.0)then
 *              mass2_bpp = mass0(2)
 *          endif
           
@@ -4557,7 +4562,7 @@ component.
               else
                  b02_bcm = B(2)
               endif
-              CALL writetab(jp,tphys,evolve_type,
+              CALL writetab(bpp_ind,tphys,evolve_type,
      &                      mass1_bpp,mass2_bpp,
      &                      kstar(1),kstar(2),0.d0,
      &                      0.d0,-1.d0,0.d0,ngtv,
@@ -4597,7 +4602,7 @@ component.
               else
                  b02_bcm = B(2)
               endif
-              CALL writetab(jp,tphys,evolve_type,
+              CALL writetab(bpp_ind,tphys,evolve_type,
      &                      mass1_bpp,mass2_bpp,
      &                      kstar(1),kstar(2),0.d0,
      &                      0.d0,0.d0,0.d0,ngtv2,
@@ -4637,7 +4642,7 @@ component.
               else
                  b02_bcm = B(2)
               endif
-              CALL writetab(jp,tphys,evolve_type,
+              CALL writetab(bpp_ind,tphys,evolve_type,
      &                      mass1_bpp,mass2_bpp,
      &                      kstar(1),kstar(2),sep,
      &                      tb,ecc,rrl1,rrl2,
@@ -4741,25 +4746,26 @@ component.
       endif
       tb = tb*yeardy
 
-      if(jp.ge.1000)then
+      if(bpp_ind.ge.1000)then
          WRITE(*,*)' STOP: EVOLV2 ARRAY ERROR '
 *         CALL exit(0)
 *         STOP
-      elseif(jp.ge.40)then
-         WRITE(99,*)' EVOLV2 ARRAY WARNING ',mass1i,mass2i,tbi,ecci,jp
+      elseif(bpp_ind.ge.40)then
+         WRITE(99,*)' EVOLV2 ARRAY WARNING ',mass1i,mass2i,tbi,
+     & ecci,bpp_ind
       endif
       if(iter.ge.loop)then
-         WRITE(99,*)'ITER>=LOOP:',jp,tphys,tphysfhold,dtp,kstar,age,kst,
-     & id1_pass,id2_pass,mass(1),mass(2),iter,loop
+         WRITE(99,*)'ITER>=LOOP:',bpp_ind,tphys,tphysfhold,dtp,kstar,
+     & age,kst,id1_pass,id2_pass,mass(1),mass(2),iter,loop
 *         CALL exit(0)
 *         STOP
       endif
       bcm(ip+1,1) = -1.0
-      bpp(jp+1,1) = -1.0
+      bpp(bpp_ind+1,1) = -1.0
 
       if(using_cmc.eq.0)then
           bcm_index_out = ip
-          bpp_index_out = jp
+          bpp_index_out = bpp_ind
           kick_info_out = kick_info
       endif
 *

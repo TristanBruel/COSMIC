@@ -500,7 +500,7 @@
      &                       binstate,mergertype,zpars(14)**2.d5,'bpp')
                    endif
                endif
-               CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
+               CALL kick(KW1,M_postCE,mc_co(1),M1,M2,ECC,SEP_postCE,
      &                   JORB,vk,star1,R2,fallback,sigmahold,
      &                   kick_info,disrupt,bkick)
 * Returning variable state to original naming convention
@@ -817,7 +817,7 @@
                   formation1 = 3
                   endif
                endif
-               CALL kick(KW1,M_postCE,M1,M2,ECC,SEP_postCE,
+               CALL kick(KW1,M_postCE,mc_co(1),M1,M2,ECC,SEP_postCE,
      &                   JORB,vk,star1,R2,fallback,sigmahold,
      &                   kick_info,disrupt,bkick)
 * Returning variable state to original naming convention
@@ -981,7 +981,7 @@
      &                       binstate,mergertype,zpars(14)**2.d5,'bpp')
                    endif
                endif
-               CALL kick(KW2,M_postCE,M2,M1,ECC,SEP_postCE,
+               CALL kick(KW2,M_postCE,mc_co(2),M2,M1,ECC,SEP_postCE,
      &                   JORB,vk,star2,R1,fallback,sigmahold,
      &                   kick_info,disrupt,bkick)
 * Returning variable state to original naming convention
@@ -1219,7 +1219,7 @@
      &                       binstate,mergertype,zpars(14)**2.d5,'bpp')
                    endif
             endif
-            CALL kick(KW,MF,M1,0.d0,0.d0,-1.d0,0.d0,vk,star1,
+            CALL kick(KW,MF,M1,mc_co(1),0.d0,0.d0,-1.d0,0.d0,vk,star1,
      &                0.d0,fallback,sigmahold,kick_info,disrupt,bkick)
             if(output) write(*,*)'coel 2 6:',KW,M1,M01,R1,MENV,RENV
          ENDIF

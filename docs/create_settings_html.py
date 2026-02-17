@@ -46,7 +46,7 @@ settings_template = """<div class="setting">
 option_template = """<li><code class="docutils literal notranslate"><span class="pre opt-val"></span></code>: <span class="opt-desc"></span></li>"""
 
 # read the settings file
-with open("cosmic-settings.json") as f:
+with open("../src/cosmic/data/cosmic-settings.json") as f:
     settings = json.load(f)
 
 # go through each major settings group
@@ -198,5 +198,5 @@ for group in settings:
     soup.select_one(".container-fluid").append(new_group)
 
     # write the soup out to an HTML file for this category
-    with open(f"pages/config/config_insert_{group['category']}.html", "w") as f:
+    with open(f"_generated/config_insert_{group['category']}.html", "w") as f:
         f.write(str(soup))
