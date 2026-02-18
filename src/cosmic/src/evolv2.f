@@ -156,7 +156,7 @@
       INTEGER loop,iter,intpol,k,ip,j1,j2
       INTEGER bcm_index_out, bpp_index_out
       INTEGER kcomp1,kcomp2,formation(2)
-      PARAMETER(loop=20000)
+      PARAMETER(loop=40000)
       INTEGER kstar(2),kw,kst,kw1,kw2,kmin,kmax
       INTEGER kstar1_bpp,kstar2_bpp
 *
@@ -1238,7 +1238,8 @@ component.
 * At this point there may have been a supernova.
 *
          if((kw.ne.kstar(k).and.kstar(k).le.12.and.
-     &      (kw.eq.13.or.kw.eq.14)).or.(ABS(merger).ge.20.d0))then
+     &      (kw.eq.13.or.kw.eq.14.or.(kw.eq.15.and.pisn_track(k).eq.7)))
+     &      .or.(ABS(merger).ge.20.d0))then
             if(formation(k).ne.11) formation(k) = 1
             if(kw.eq.13.and.ecsn.gt.0.d0)then
                if(kstar(k).le.6)then
@@ -1343,6 +1344,9 @@ component.
                   b02_bcm = B(2)
                endif
 
+* Check if PISN occurred, and if so overwrite formation
+               if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
+               if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
                CALL writetab(bpp_ind,tphys,evolve_type,
      &                      mass(1),mass(2),kstar(1),kstar(2),
      &                      sep,tb,ecc,rrl1,rrl2,
@@ -1385,6 +1389,10 @@ component.
                else
                   b02_bcm = B(2)
                endif
+
+* Check if PISN occurred, and if so overwrite formation
+               if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
+               if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
 
                CALL writetab(bpp_ind,tphys,evolve_type,
      &                       mass(1),mass(2),kstar(1),kstar(2),
@@ -1587,6 +1595,7 @@ component.
 * We should capture to evol_type change for SN as an evolutionary change
              evolve_type = 2.d0
           endif  
+
 * KB: set core masses to zero for remnants          
           if(kstar(1).ge.10)then
              mc_he(1) = 0
@@ -1943,6 +1952,7 @@ component.
       else
          b02_bcm = B(2)
       endif
+
       CALL writetab(bpp_ind,tphys,evolve_type,
      &              mass(1),mass(2),kstar(1),kstar(2),sep,
      &              tb,ecc,rrl1,rrl2,
@@ -2548,8 +2558,9 @@ component.
 
          mass1_bpp = mass(1)
          mass2_bpp = mass(2)
-         if(kstar(1).eq.15) mass1_bpp = mass0(1)
-         if(kstar(2).eq.15) mass2_bpp = mass0(2)
+* TW: I commented this out, don't give massless remnants a mass
+*         if(kstar(1).eq.15) mass1_bpp = mass0(1)
+*         if(kstar(2).eq.15) mass2_bpp = mass0(2)
          rrl1 = rad(1)/rol(1)
          rrl2 = rad(2)/rol(2)
          teff1 = 1000.d0*((1130.d0*lumin(1)/
@@ -3635,8 +3646,9 @@ component.
 *
 * Check for a supernova and correct the semi-major axis if so.
 *
-         if(kw.ne.kstar(k).and.kstar(k).le.12.and.
-     &      (kw.eq.13.or.kw.eq.14))then
+         if((kw.ne.kstar(k).and.kstar(k).le.12.and.
+     &      (kw.eq.13.or.kw.eq.14
+     &       .or.(kw.eq.15.and.pisn_track(k).eq.7))))then
             dms(k) = mass(k) - mt
             if(formation(k).ne.11) formation(k) = 1
             if(kw.eq.13.and.ecsn.gt.0.d0)then
@@ -3696,6 +3708,10 @@ component.
             else
                b02_bcm = B(2)
             endif
+
+* Check if PISN occurred, and if so overwrite formation
+            if(pisn_track(1).ne.0) formation(1) = pisn_track(1)
+            if(pisn_track(2).ne.0) formation(2) = pisn_track(2)
 
             CALL writetab(bpp_ind,tphys,evolve_type,
      &                    mass(1),mass(2),kstar(1),kstar(2),
@@ -4195,8 +4211,9 @@ component.
           evolve_type = 8.0
           mass1_bpp = mass(1)
           mass2_bpp = mass(2)
-          if(kstar(1).eq.15) mass1_bpp = mass0(1)
-          if(kstar(2).eq.15) mass2_bpp = mass0(2)
+* TW: I commented this out, don't give massless remnants a mass
+*         if(kstar(1).eq.15) mass1_bpp = mass0(1)
+*         if(kstar(2).eq.15) mass2_bpp = mass0(2)
           rrl1 = MIN(rrl1,0.99d0)
           rrl2 = MIN(rrl2,0.99d0)
           teff1 = 1000.d0*((1130.d0*lumin(1)/
@@ -4414,6 +4431,8 @@ component.
      &                        binstate,mergertype,z,'bpp')
             else
                 evolve_type = 9.0
+                tb = 0.d0
+                sep = 0.d0
                 teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
                 teff2 = 1000.d0*((1130.d0*lumin(2)/
@@ -4584,6 +4603,8 @@ component.
 * No remnant is left in either case.
 *
               evolve_type = 9.0
+              tb = 0.d0
+              sep = 0.d0
               teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad(1)**2.d0))**(1.d0/4.d0))
               teff2 = 1000.d0*((1130.d0*lumin(2)/

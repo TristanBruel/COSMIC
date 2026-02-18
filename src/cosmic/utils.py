@@ -483,7 +483,7 @@ def pop_write(
         # save the singles initCond dataframe
         dat_store.append("initC_singles", kwargs["initC_singles"])
 
-        # save the singles kick_info dataframe
+        # save the singles kick_info dataframe      
         dat_store.append("kick_info_singles", kwargs["kick_info_singles"])
 
     return
@@ -1207,7 +1207,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
         if BSEDict["dtp"] < 0:
             raise ValueError(
                 f"dtp needs to be greater than or equal to 0 (you set it to '{BSEDict['dtp']:0.2f}')"
-                )
+            )
 
     if "kickflag" in BSEDict.keys():
         if BSEDict["kickflag"] in [-1, -2] and ((BSEDict['ecsn'] != 2.25) or (BSEDict['ecsn_mlow'] != 1.6)):
@@ -1554,7 +1554,7 @@ def explain_setting(setting):
                 for opt in flag['options']:
                     print(f"  {f'{GREEN}*' if 'default' in opt else '-'} {opt['name']}: {strip_tags(opt['description'])}{END}")
                 return
-
+            
     raise ValueError(f"Unknown setting '{setting}'")
 
 

@@ -135,22 +135,22 @@ All values with a ``_1`` label refer to the primary; the bcm DataFrame also incl
 ``ecc``                Eccentricity
 ``B_1``                Neutron star magnetic field [:math:`{\rm{G}}`]
 ``SN_1``               Supernova type:
-
+    
                         1: Iron core-collapse supernova
-
+    
                         2: Electron capture supernova
-
+    
                         3: Ultra-stripped supernova (these happen whenever a He-star undergoes a common envelope with a compact companion)
-
+    
                         4: Accretion induced collapse supernova
-
+    
                         5: Merger induced collapse
-
+    
                         6: Pulsational pair instability
-
+    
                         7: Pair instability supernova
 ``bin_state``          State of the binary: -1 [single], 0 [binary], 1 [merged], 2 [disrupted]
-``merger_type``        String of the kstar's in the merger. For example, two neutron stars that merged will be '1313'. Set to '-001' if binary has not merged.
+``merger_type``        String of the kstar's in the merger. For example, two neutron stars that merged will be '1313'. Set to '-001' if binary has not merged. 
 ``bin_num``            Unique binary index that is consistent across initial conditions, bcm. bpp, and kick_info DataFrames
 ====================  =====================================================
 

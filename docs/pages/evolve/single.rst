@@ -83,7 +83,7 @@ For every evolved binary system, BSE generates two arrays, which are stored as p
 You can see the different parameters included in each DataFrame using the columns attribute of the DataFrame:
 
 .. ipython:: python
-
+    
     print(bpp.columns)
 
     print(bcm.columns)
@@ -97,9 +97,9 @@ Each of the parameters in bpp or bcm can be accessed in the usual way for DataFr
 
 .. ipython:: python
 
-    bpp.mass_1
+    print(bpp.mass_1)
 
-    bpp = bpp[['mass_1', 'mass_2', 'kstar_1', 'kstar_2', 'sep', 'evol_type']]
+    print(bpp[['mass_1', 'mass_2', 'kstar_1', 'kstar_2', 'sep', 'evol_type']])
 
 
 You can use the ``utils.convert_kstar_evol_type`` function to convert the
@@ -127,7 +127,7 @@ want columns from ``bcm`` in the ``bpp`` table or vice versa.
 For example, to only get the time, masses, stellar types, separation, and evolution type, you can do:
 
 .. ipython:: python
-
+    
     bpp, bcm, initC, kick_info = Evolve.evolve(
         initialbinarytable=single_binary,
         BSEDict=BSEDict,
@@ -164,7 +164,7 @@ In this case, all the action happens in the first few Myr, so let's specify a t_
 
 .. ipython:: python
     :okwarning:
-
+    
     fig = evolve_and_plot(initC, t_min=None, t_max=6.0, BSEDict=BSEDict, sys_obs={})
 
 .. plot::

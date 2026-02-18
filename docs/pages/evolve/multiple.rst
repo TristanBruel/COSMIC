@@ -14,7 +14,7 @@ Let's start by importing the necessary modules:
 
 And use the same BSE dict as before:
 
-.. include:: ../../_generated/default_bsedict.rst       
+.. include:: ../../_generated/default_bsedict.rst
 
 Below is an example for systems that could form GW150914 and GW170817 - like binaries.
 

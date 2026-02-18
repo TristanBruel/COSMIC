@@ -85,7 +85,6 @@
       REAL*8 mcgbtf,lmcgbf
       EXTERNAL mcgbtf,lmcgbf
       REAL*8 z,m1endstage1,m2endstage1,reagb
-
 *
 * Initialize
 *
@@ -111,7 +110,6 @@
       COEL = .FALSE.
       snp = 0
       output = .false.
-
 *
 * In the case of 2-stage formalism (Hirai & Mandel 2022)
 *
@@ -120,7 +118,7 @@
          CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
          CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &           R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
-     &           bhspin1,star1,caseMT,jp)
+     &           bhspin1,star1,caseMT)
          OSPIN1 = JSPIN1/(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
          if(switchedCE)then
             teff1 = 1000.d0*((1130.d0*lumin(2)/
@@ -149,7 +147,7 @@
          CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
          CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &           R2,L2,KW2,MC2,RC2,MENV,RENV,K22,
-     &           bhspin2,star2,caseMT,jp)
+     &           bhspin2,star2,caseMT)
          OSPIN2 = JSPIN2/(K22*R2*R2*(M2-MC2)+K3*RC2*RC2*MC2)
          if(switchedCE)then
             teff2 = 1000.d0*((1130.d0*lumin(1)/
@@ -228,7 +226,7 @@
          RL2 = RL(Q2)
 
       ELSE
-* 
+*
 * Standard energy formalism
 *
 *
@@ -238,7 +236,7 @@
          CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
          CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &            R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
-     &            bhspin1,star1,caseMT,jp)
+     &            bhspin1,star1,caseMT)
          OSPIN1 = JSPIN1/(K21*R1*R1*(M1-MC1)+K3*RC1*RC1*MC1)
          MENVD = MENV/(M1-MC1)
          RZAMS = RZAMSF(M01)
@@ -251,7 +249,7 @@
          CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
          CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &            R2,L2,KW2,MC2,RC2,MENV,RENV,K22,
-     &            bhspin2,star2,caseMT,jp)
+     &            bhspin2,star2,caseMT)
          OSPIN2 = JSPIN2/(K22*R2*R2*(M2-MC2)+K3*RC2*RC2*MC2)
 *
 * Calculate the binding energy of the giant envelope (multiplied by lambda).
@@ -379,7 +377,7 @@
             CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
-     &                  bhspin1,star1,caseMT,jp)
+     &                  bhspin1,star1,caseMT)
             IF(KW1.GE.13)THEN
                formation1 = 1
                if(KW1.eq.13.and.ecsn.gt.0.d0)then
@@ -686,7 +684,7 @@
             CALL star(KW1,M01,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS)
             CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &                  R1,L1,KW1,MC1,RC1,MENV,RENV,K21,
-     &                  bhspin1,star1,caseMT,jp)
+     &                  bhspin1,star1,caseMT)
             IF(KW1.GE.13)THEN
                formation1 = 1
                if(KW1.eq.13.and.ecsn.gt.0.d0)then
@@ -859,7 +857,7 @@
             CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS)
             CALL hrdiag(M02,AJ2,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,
      &                  R2,L2,KW2,MC2,RC2,MENV,RENV,K22,
-     &                  bhspin2,star2,caseMT,jp)
+     &                  bhspin2,star2,caseMT)
             IF(KW2.GE.13.AND.KW.LT.13)THEN
                formation2 = 1
                if(KW2.eq.13.and.ecsn.gt.0.d0)then
@@ -1104,7 +1102,7 @@
          M1i = M1
          CALL hrdiag(M01,AJ1,M1,TM1,TN,TSCLS1,LUMS,GB,ZPARS,
      &               R1,L1,KW,MC1,RC1,MENV,RENV,K21,
-     &               bhspin1,star1,caseMT,jp)
+     &               bhspin1,star1,caseMT)
          if(output) write(*,*)'coel 2 5:',KW,M1,M01,R1,MENV,RENV
          IF(KW1i.LE.12.and.KW.GE.13)THEN
             formation1 = 1
@@ -1182,7 +1180,7 @@
      &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
                        CALL writetab(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
-     &                       kstar2_bpp,-1.d0,TB,0.d0,
+     &                       kstar2_bpp,0.d0,TB,0.d0,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
@@ -1203,7 +1201,7 @@
      &                       (rad2_bpp**2.d0))**(1.d0/4.d0))
                        CALL writetab(jp,tphys,evolve_type,
      &                       mass1_bpp,mass2_bpp,kstar1_bpp,
-     &                       kstar2_bpp,-1.d0,TB,0.d0,
+     &                       kstar2_bpp,0.d0,TB,0.d0,
      &                       rrl1_bpp,rrl2_bpp,
      &                       aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
      &                       mc_he(1),mc_he(2),mc_co(1),mc_co(2),
@@ -1219,7 +1217,7 @@
      &                       binstate,mergertype,zpars(14)**2.d5,'bpp')
                    endif
             endif
-            CALL kick(KW,MF,M1,mc_co(1),0.d0,0.d0,-1.d0,0.d0,vk,star1,
+            CALL kick(KW,MF,mc_co(1),M1,0.d0,0.d0,-1.d0,0.d0,vk,star1,
      &                0.d0,fallback,sigmahold,kick_info,disrupt,bkick)
             if(output) write(*,*)'coel 2 6:',KW,M1,M01,R1,MENV,RENV
          ENDIF
@@ -1256,6 +1254,21 @@
          JSPIN2 = OSPIN2*(K22*R2*R2*(M2-MC2)+K3*RC2*RC2*MC2)
       ENDIF
    30 SEP = SEPF
+
+* log disruptions from SNe to the bpp with evolve_type=11
+      if(disrupt.and..not.COEL)THEN
+         call writetab(
+     &      jp,tphys,11.d0,M1,M2,KW1,KW2,-1.d0,-1.d0,-1.d0,0.d0,
+     &      0.d0,aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,mc_he(1),
+     &      mc_he(2),mc_co(1),mc_co(2),rad(1),rad(2),M01,M02,lumin(1),
+     &      lumin(2),teff1,teff2,RC1,RC2,MENV,mHe_preSN,renv_bpp(1),
+     &      renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),bacc(1),bacc(2),
+     &      tacc(1),tacc(2),epoch(1),epoch(2),bhspin1,bhspin2,
+     &      deltam_1,deltam_2,formation1,formation2,
+     &      caseMT(1),caseMT(2),
+     &      2,-1,zpars(14)**2.d5,'bpp')
+      endif
+
       if(output) write(*,*)'end of CE1:',KW1,M1,M01,R1,MENV,RENV
       if(output) write(*,*)'end of CE1:',KW2,M2,M02,R2,MENV,RENV
       sigma = sigmahold

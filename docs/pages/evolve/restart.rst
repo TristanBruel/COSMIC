@@ -78,7 +78,7 @@ restart the evolution after the mass transfer would occur. We can do this by usi
     import pandas as pd
 
     single_binary = InitialBinaryTable.InitialBinaries(
-        m1=65.0, m2=0.93, porb=4500, ecc=0.448872,
+        m1=65.0, m2=0.93, porb=4500, ecc=0.448872, 
         tphysf=13700.0, kstar1=1, kstar2=1, metallicity=0.014*0.6
     )
     bpp, bcm, initC, kick_info = Evolve.evolve(

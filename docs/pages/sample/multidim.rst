@@ -14,7 +14,7 @@ The multidimensional initial binary data is sampled in COSMIC as follows:
 
 
 .. tip::
-
+    
     The multidimensional sampler arguments can be found here :func:`~cosmic.sample.sampler.multidim.get_multidim_sampler` or by using the multidimensional sampler help call (``help(multidim.get_multidim_sampler)``)
 
 The random seed is used to reproduce your initial sample, since there are several stochastic processes involved in the muldimensional sample.

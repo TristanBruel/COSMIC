@@ -14,7 +14,7 @@ First import the :class:`~cosmic.sample.initialbinarytable.InitialBinaryTable` c
     from cosmic.sample.sampler import independent
 
 .. tip::
-
+    
     The independent sampler contains multiple models for each binary parameter.
     You can find the available models here: :func:`~cosmic.sample.sampler.independent.get_independent_sampler` or by using the independent sampler help call (``help(independent.get_independent_sampler)``)
 

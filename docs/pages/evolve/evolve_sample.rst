@@ -37,7 +37,7 @@ guides:
 .. include:: ../../_generated/default_bsedict.rst
 
 .. ipython:: python
-   :okwarning:
+    :okwarning:
 
     bpp, bcm, initC, kick_info = Evolve.evolve(
         initialbinarytable=InitialBinaries, BSEDict=BSEDict
