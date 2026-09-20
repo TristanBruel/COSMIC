@@ -128,7 +128,7 @@
         LAMB1 = CELAMF(KW,M01,L1,R1,RZAMS,MENVD,LAMBDAF)
       ENDIF
 *
-* Two-stage energy formalism
+* Two-stage formalism
 *
       IF(CE2STAGEFLAG.EQ.1)THEN
          IF (using_SSE.eq.1) THEN
@@ -141,8 +141,9 @@
            tset = tonset(tmin,met)
            teff1 = 1000.d0*((1130.d0*lumin(1)/
      &                       (rad1_bpp**2.d0))**(1.d0/4.d0))
-           MENV = mconvenv(KW,M1,met,teff1,tmin,tset,AJ1,TM1)
-           mconvmax = menvmax(KW,M1,met)
+           MENV = mconvenv(KW,M1,MC1,met,teff1,tmin,tset,
+     &                       AJ1,TM1,TSCLS1(1))
+           mconvmax = menvmax(KW,M1,MC1,met)
            LAMB1 = CELAMHE(M1,met,MENV,mconvmax)
          ENDIF
 * if > 8 Msun, the envelope participating in the first stage is only the convective one
@@ -155,15 +156,19 @@
          ELSE
             m1endstage1 = MC1 + (M1-MC1 - MENV) * (M1-2.0d0) /6.0d0
          ENDIF
+         m2endstage1 = M2
 *
-* Calculate the binding energy of the convective envelope (multiplied by lambda).
+* Calculate the binding energy of the convective envelope.
 *
          EBINDI = M1*(M1-m1endstage1)/(LAMB1*R1)
+*
+* Standard energy formalism
+*
       ELSE
 *
 * Calculate the binding energy of the giant envelope (multiplied by lambda).
 *
-      EBINDI = M1*(M1-MC1)/(LAMB1*R1)
+         EBINDI = M1*(M1-MC1)/(LAMB1*R1)
       ENDIF
       KW = KW2
       CALL star(KW2,M02,M2,TM2,TN,TSCLS2,LUMS,GB,ZPARS,dtm,star2)
@@ -175,7 +180,6 @@
 * If the secondary star is also giant-like add its envelopes energy.
 * Determine EORBI based on CEFLAG (CEFLAG=1 for de Kool prescription)
 *
-      m2endstage1 = M2
       IF(KW2.GE.2.AND.KW2.LE.9.AND.KW2.NE.7)THEN
          MENVD = MENV/(M2-MC2)
          IF (using_METISSE.eq.1) THEN
@@ -185,7 +189,7 @@
             LAMB2 = CELAMF(KW,M02,L2,R2,RZAMS,MENVD,LAMBDAF)
          ENDIF
 *
-* Two-stage energy formalism
+* Two-stage formalism
 *
          IF(CE2STAGEFLAG.EQ.1)THEN
             IF (using_SSE.eq.1) THEN
@@ -198,8 +202,9 @@
               tset = tonset(tmin,met)
               teff2 = 1000.d0*((1130.d0*lumin(2)/
      &                          (rad2_bpp**2.d0))**(1.d0/4.d0))
-              MENV = mconvenv(KW,M2,met,teff2,tmin,tset,AJ2,TM2)
-              mconvmax = menvmax(KW,M2,met)
+              MENV = mconvenv(KW,M2,MC2,met,teff2,tmin,tset,
+     &                          AJ2,TM2,TSCLS2(1))
+              mconvmax = menvmax(KW,M2,MC2,met)
               LAMB2 = CELAMHE(M2,met,MENV,mconvmax)
             ENDIF
 * if > 8 Msun, the envelope participating in the first stage is only the convective one
@@ -207,7 +212,7 @@
 * linear interpolation in between
             IF(M2.GE.8.0d0)THEN
                m2endstage1 = M2-MENV
-            ELSEIF(M1.LT.2.0d0)THEN
+            ELSEIF(M2.LT.2.0d0)THEN
                m2endstage1 = MC2
             ELSE
                m2endstage1 = MC2 + (M2-MC2 - MENV) * (M2-2.0d0) /6.0d0
@@ -246,52 +251,85 @@
       ENDIF
       EORBF = EORBI + EBINDI/ALPHA_CE
 *
-* If the secondary is on the main sequence.
-*
-      IF(KW2.LE.1.OR.KW2.EQ.7)THEN
-         SEPF = MC1*M2/(2.D0*EORBF)
-         Q1 = MC1/M2
-         Q2 = 1.D0/Q1
-         RL1 = RL(Q1)
-         RL2 = RL(Q2)
-*
-* If degenerate or giant secondary.
-*
-      ELSE
-         SEPF = MC1*MC2/(2.D0*EORBF)
-         Q1 = MC1/MC2
-         Q2 = 1.D0/Q1
-         RL1 = RL(Q1)
-         RL2 = RL(Q2)
-      ENDIF
-*
-* Two-stage energy formalism
+* Two-stage formalism
 *
       IF(CE2STAGEFLAG.EQ.1)THEN
          SEPF = m1endstage1*m2endstage1/(2.D0*EORBF)
-* log end of the first stage with evolve_type=3
-         q1_bpp = m1endstage1/m2endstage1
-         q2_bpp = 1.d0/q1_bpp
-         rrl1_bpp = RC1/(RL(q1_bpp)*SEP_postCE)
-         rrl2_bpp = R2/(RL(q2_bpp)*SEP_postCE)
+* Log end of the first stage with evolve_type=3
+* Check if M1 and M2 were switched on pass to comenv
+         evolve_type = 3.d0
+         if(switchedCE)then
+             mass1_bpp = m2endstage1
+             mass2_bpp = m1endstage1
+             massc1_bpp = MC2
+             massc2_bpp = MC1
+
+             kstar1_bpp = KW2i
+             kstar2_bpp = KW1i
+             q1_bpp = mass1_bpp/mass2_bpp
+             q2_bpp = 1.d0/q1_bpp
+             rrl1_bpp = R2/(RL(q1_bpp)*SEPF)
+             rrl2_bpp = RC1/(RL(q2_bpp)*SEPF)
+             aj1_bpp = AJ2
+             aj2_bpp = AJ1
+         else
+             mass1_bpp = m1endstage1
+             mass2_bpp = m2endstage1
+             massc1_bpp = MC1
+             massc2_bpp = MC2
+
+             kstar1_bpp = KW1i
+             kstar2_bpp = KW2i
+             q1_bpp = mass1_bpp/mass2_bpp
+             q2_bpp = 1.d0/q1_bpp
+             rrl1_bpp = RC1/(RL(q1_bpp)*SEPF)
+             rrl2_bpp = R2/(RL(q2_bpp)*SEPF)
+             aj1_bpp = AJ1
+             aj2_bpp = AJ2
+         endif
          TB = (SEPF/AURSUN)*
      &        SQRT(SEPF/(AURSUN*(m1endstage1+m2endstage1)))
-         CALL writetab(jp,tphys,3.d0,
-     &        m1endstage1,m2endstage1,KW1,KW2,
-     &        SEPF,TB,ECC,
-     &        rrl1_bpp,rrl2_bpp,
-     &        AJ1,AJ2,tms1_bpp,tms2_bpp,
-     &        mc_he(1),mc_he(2),mc_co(1),mc_co(2),
-     &        rad1_bpp,rad2_bpp,
-     &        M02,M01,lumin(1),lumin(2),
-     &        teff1,teff2,
-     &        RC2,RC1,menv_bpp(1),menv_bpp(2),
-     &        renv_bpp(1),
-     &        renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
-     &        bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
-     &        epoch(2),bhspin2,bhspin1,
-     &        deltam_2,deltam_1,formation2,formation1,
-     &        binstate,mergertype,zpars(14)**2.d5,'bpp')
+         if(using_cmc.eq.0)then
+            teff1 = 1000.d0*((1130.d0*lumin(1)/
+     &            (rad1_bpp**2.d0))**(1.d0/4.d0))
+            teff2 = 1000.d0*((1130.d0*lumin(2)/
+     &            (rad2_bpp**2.d0))**(1.d0/4.d0))
+            if(switchedCE)then
+               CALL writetab(jp,tphys,evolve_type,
+     &              mass1_bpp,mass2_bpp,kstar1_bpp,
+     &              kstar2_bpp,SEPF,TB,ECC,
+     &              rrl1_bpp,rrl2_bpp,
+     &              aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
+     &              mc_he(1),mc_he(2),mc_co(1),mc_co(2),
+     &              rad1_bpp,rad2_bpp,
+     &              M02,M01,lumin(1),lumin(2),
+     &              teff1,teff2,
+     &              RC2,RC1,menv_bpp(1),menv_bpp(2),
+     &              renv_bpp(1),
+     &              renv_bpp(2),OSPIN2,OSPIN1,B_0(1),B_0(2),
+     &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &              epoch(2),bhspin2,bhspin1,
+     &              deltam_2,deltam_1,formation2,formation1,
+     &              binstate,mergertype,zpars(14)**2.d5,'bpp')
+            else
+               CALL writetab(jp,tphys,evolve_type,
+     &              mass1_bpp,mass2_bpp,kstar1_bpp,
+     &              kstar2_bpp,SEPF,TB,ECC,
+     &              rrl1_bpp,rrl2_bpp,
+     &              aj1_bpp,aj2_bpp,tms1_bpp,tms2_bpp,
+     &              mc_he(1),mc_he(2),mc_co(1),mc_co(2),
+     &              rad1_bpp,rad2_bpp,
+     &              M01,M02,lumin(1),lumin(2),
+     &              teff1,teff2,
+     &              RC1,RC2,menv_bpp(1),menv_bpp(2),
+     &              renv_bpp(1),
+     &              renv_bpp(2),OSPIN1,OSPIN2,B_0(1),B_0(2),
+     &              bacc(1),bacc(2),tacc(1),tacc(2),epoch(1),
+     &              epoch(2),bhspin1,bhspin2,
+     &              deltam_1,deltam_2,formation1,formation2,
+     &              binstate,mergertype,zpars(14)**2.d5,'bpp')
+            endif
+         endif
 *
 * Second stage: stable mass transfer of the radiative intershell
 * Binary hardening formula from Picker, Hirai & Mandel 2024
@@ -306,6 +344,29 @@
          Q2 = 1.D0/Q1
          RL1 = RL(Q1)
          RL2 = RL(Q2)
+*
+* Standard energy formalism
+*
+      ELSE
+*
+* If the secondary is on the main sequence.
+*
+         IF(KW2.LE.1.OR.KW2.EQ.7)THEN
+            SEPF = MC1*M2/(2.D0*EORBF)
+            Q1 = MC1/M2
+            Q2 = 1.D0/Q1
+            RL1 = RL(Q1)
+            RL2 = RL(Q2)
+*
+* If degenerate or giant secondary.
+*
+         ELSE
+            SEPF = MC1*MC2/(2.D0*EORBF)
+            Q1 = MC1/MC2
+            Q2 = 1.D0/Q1
+            RL1 = RL(Q1)
+            RL2 = RL(Q2)
+         ENDIF
       ENDIF
 *
 * If the secondary is on the main sequence see if it fills its Roche lobe.
@@ -528,16 +589,11 @@
                IF(ECC.GT.1.D0) GOTO 30
             ENDIF
          ENDIF
-      ELSE
 *
 * Degenerate or giant secondary. Check if the least massive core fills its
 * Roche lobe.
 *
-         SEPF = MC1*MC2/(2.D0*EORBF)
-         Q1 = MC1/MC2
-         Q2 = 1.D0/Q1
-         RL1 = RL(Q1)
-         RL2 = RL(Q2)
+      ELSE
 *
 * If cemergeflag is set, cause kstars without clear core-envelope
 * structure to merge automatically if they enter a CE

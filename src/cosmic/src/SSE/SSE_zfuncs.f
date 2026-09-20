@@ -858,17 +858,16 @@
       return
       end
 ***
-      real*8 FUNCTION menvmax(kw,m,z)
+      real*8 FUNCTION menvmax(kw,m,mc,z)
       implicit none
       integer kw
-      real*8 m,z
+      real*8 m,mc,z
       real*8 mcagbf,mifmcf
       external mcagbf
 *
 * A function to evaluate the maximum mass of the convective envelope
-*       from Picker, Hirai & Mandel 2024
-*
-* I'm not sure how HG stars should be treated ...
+* MS and HG stars follow Hurley et al. 2000
+* Giant stars follow Picker, Hirai & Mandel 2024
 *
       if(kw.ge.10)then
          menvmax = 0.0d0
@@ -881,23 +880,26 @@
                menvmax = 0.35d0*(1.25d0-m)*(1.25d0-m)/0.81d0
             endif
          endif
+      elseif(kw.eq.2)then
+         menvmax = m-mc
       else
-         mifmcf = -0.023*log10(z)-0.0023
+         mifmcf = -0.023d0*log10(z)-0.0023d0
          menvmax = max(m-mcagbf(m)*(1.0d0+mifmcf), 0.0d0)
       endif
 *     
       return
       end
 ***
-      real*8 FUNCTION mconvenv(kw,m,z,teff,tmin,tset,aj,tm)
+      real*8 FUNCTION mconvenv(kw,m,mc,z,teff,tmin,tset,aj,tm,tbgb)
       implicit none
       integer kw
-      real*8 m,z,teff,tmin,tset,aj,tm
+      real*8 m,mc,z,teff,tmin,tset,aj,tm,tbgb
       real*8 menvmax
       external menvmax
 *
 * A function to evaluate the mass of the convective envelope
-*       from Picker, Hirai & Mandel 2024
+* MS and HG stars follow Hurley et al. 2000
+* Giant stars follow Picker, Hirai & Mandel 2024
 *
       if(kw.ge.10)then
          mconvenv = 0.0d0
@@ -905,10 +907,12 @@
          if(m.gt.1.25d0)then
             mconvenv = 0.0d0
          else
-            mconvenv = menvmax(kw,m,z)*sqrt(sqrt(1.0d0-aj/tm))
+            mconvenv = menvmax(kw,m,mc,z)*sqrt(sqrt(1.0d0-aj/tm))
          endif
+      elseif(kw.eq.2)then
+         mconvenv = menvmax(kw,m,mc,z)*((aj-tm)/(tbgb-tm))
       else
-         mconvenv = menvmax(kw,m,z)/(1.0d0+exp(4.6d0*
+         mconvenv = menvmax(kw,m,mc,z)/(1.0d0+exp(4.6d0*
      &       (tmin+tset-2.0d0*teff)/(tmin-tset)))
       endif
 *
