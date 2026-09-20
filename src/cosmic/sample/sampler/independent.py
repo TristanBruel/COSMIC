@@ -24,11 +24,12 @@ import warnings
 import pandas as pd
 import warnings
 from multiprocessing import Pool
+import os
 
 from cosmic import utils
 
 from .sampler import register_sampler
-from .. import InitialBinaryTable
+from ..initialbinarytable import InitialBinaryTable
 
 
 __author__ = "Katelyn Breivik <katie.breivik@gmail.com>"
@@ -218,7 +219,7 @@ def get_independent_sampler(
 
     # if no pool was passed in, but nproc > 1, create a pool
     if not pool_existed_already and nproc > 1:
-        pool = Pool(nproc)
+        pool = Pool(nproc, initializer=_init_worker)
 
     # if there's no pool, simply pass the arguments to the worker
     if pool is None:
@@ -478,6 +479,11 @@ def _independent_sampler_worker(
         n_singles,
         n_binaries
     )
+
+def _init_worker():
+    """Ensure that each worker process has a different random seed."""
+    np.random.seed(np.random.get_state()[1][0] + os.getpid())
+
 
 
 register_sampler(
@@ -971,12 +977,12 @@ class Sample(object):
         # of the period distribution there
         q = mass2 / mass1
         RL_fac = (0.49 * q ** (2.0 / 3.0)) / (
-            0.6 * q ** (2.0 / 3.0) + np.log(1 + q ** 1.0 / 3.0)
+            0.6 * q ** (2.0 / 3.0) + np.log(1 + q ** (1.0 / 3.0))
         )
 
         q2 = mass1 / mass2
         RL_fac2 = (0.49 * q2 ** (2.0 / 3.0)) / (
-            0.6 * q2 ** (2.0 / 3.0) + np.log(1 + q2 ** 1.0 / 3.0)
+            0.6 * q2 ** (2.0 / 3.0) + np.log(1 + q2 ** (1.0 / 3.0))
         )
 
         # include the factor for the eccentricity
