@@ -616,22 +616,35 @@
 * Use the Maltsev+25 prescription with additional details from Willcox+25
 
       real*8 M1, M2, M3
+      real*8 M1ns, M2ns
       real*8 M1S, M2S, M3S, M1S_Z01, M2S_Z01, M3S_Z01
+      real*8 M1nsS, M2nsS, M1nsS_Z01, M2nsS_Z01 
       real*8 M1A, M2A, M3A, M1A_Z01, M2A_Z01, M3A_Z01
+      real*8 M1nsA, M2nsA, M1nsA_Z01, M2nsA_Z01 
       real*8 M1B, M2B, M3B, M1B_Z01, M2B_Z01, M3B_Z01
+      real*8 M1nsB, M2nsB, M1nsB_Z01, M2nsB_Z01 
       real*8 M1C, M2C, M3C, M1C_Z01, M2C_Z01, M3C_Z01
+      real*8 M1nsC, M2nsC, M1nsC_Z01, M2nsC_Z01 
       real*8 M_min, M_max, M_NS
       real*8 log10_1, log10_1_div_10, log10_1_div_50
 
 * Taken from summary in Table A1 of Willcox+25
       PARAMETER(M1S=6.6d0, M2S=7.2d0, M3S=13.0d0,
+     &          M1nsS=9.0d0, M2nsS=10.2d0,
      &          M1A=7.4d0, M2A=8.4d0, M3A=15.4d0,
+     &          M1nsA=11.1d0, M2nsS=12.1d0,
      &          M1B=7.7d0, M2B=8.3d0, M3B=15.2d0,
+     &          M1nsB=9.9d0, M2nsB=10.3d0,
      &          M1C=6.6d0, M2C=7.1d0, M3C=13.2d0,
+     &          M1nsC=9.6d0, M2nsC=10.7d0,
      &          M1S_Z01=6.1d0, M2S_Z01=6.6d0, M3S_Z01=12.9d0,
+     &          M1nsS_Z01=7.4d0, M2nsS_Z01=11.0d0,
      &          M1A_Z01=7.0d0, M2A_Z01=7.4d0, M3A_Z01=13.7d0,
+     &          M1nsA_Z01=10.4d0, M2nsA_Z01=11.1d0,
      &          M1B_Z01=6.9d0, M2B_Z01=7.9d0, M3B_Z01=13.7d0,
+     &          M1nsB_Z01=9.3d0, M2nsB_Z01=10.3d0,
      &          M1C_Z01=6.3d0, M2C_Z01=7.1d0, M3C_Z01=12.3d0,
+     &          M1nsC_Z01=8.9d0, M2nsC_Z01=9.5d0,
      &          M_min=5.62d0, M_max=16.18d0,
      &          log10_1=0, log10_1_div_10=-1, log10_1_div_50=-1.69897d0,
      &          M_NS=1.4d0)
@@ -660,57 +673,103 @@ collapse BH if the CO core mass is outside the Maltsev+25 range
 * Normalize metallicity to solar
       met = met / zsun
 
-* Bound log10Z based on maltsev_mode choice from user
-      if (maltsev_mode.eq.0) then
+* Bound log10Z based on maltsev_extrapol choice from user
+      if (maltsev_extrapol.eq.0) then
         log10Z_bounded = log10(met)
-      elseif (maltsev_mode.eq.1) then
+      elseif (maltsev_extrapol.eq.1) then
         log10Z_bounded = min(max(log10(met), log10_1_div_50), log10_1)
-      elseif (maltsev_mode.eq.2) then
+      elseif (maltsev_extrapol.eq.2) then
         log10Z_bounded = min(max(log10(met), log10_1_div_10), log10_1)
       endif
 
 * Determine the mass boundaries based on MT type and metallicity
       if(mt_type.eq.-1)then
          M1 = M1S + (M1S - M1S_Z01) * log10Z_bounded
+         M1ns = M1nsS + (M1nsS - M1nsS_Z01) * log10Z_bounded
          M2 = M2S + (M2S - M2S_Z01) * log10Z_bounded
+         M2ns = M2nsS + (M2nsS - M2nsS_Z01) * log10Z_bounded
          M3 = M3S + (M3S - M3S_Z01) * log10Z_bounded
       elseif(mt_type.eq.0)then
          M1 = M1A + (M1A - M1A_Z01) * log10Z_bounded
+         M1ns = M1nsA + (M1nsA - M1nsA_Z01) * log10Z_bounded
          M2 = M2A + (M2A - M2A_Z01) * log10Z_bounded
+         M2ns = M2nsA + (M2nsA - M2nsA_Z01) * log10Z_bounded
          M3 = M3A + (M3A - M3A_Z01) * log10Z_bounded
       elseif(mt_type.eq.1)then
          M1 = M1B + (M1B - M1B_Z01) * log10Z_bounded
+         M1ns = M1nsB + (M1nsB - M1nsB_Z01) * log10Z_bounded
          M2 = M2B + (M2B - M2B_Z01) * log10Z_bounded
+         M2ns = M2nsB + (M2nsB - M2nsB_Z01) * log10Z_bounded
          M3 = M3B + (M3B - M3B_Z01) * log10Z_bounded
       elseif(mt_type.eq.2)then
          M1 = M1C + (M1C - M1C_Z01) * log10Z_bounded
+         M1ns = M1nsC + (M1nsC - M1nsC_Z01) * log10Z_bounded
          M2 = M2C + (M2C - M2C_Z01) * log10Z_bounded
+         M2ns = M2nsC + (M2nsC - M2nsC_Z01) * log10Z_bounded
          M3 = M3C + (M3C - M3C_Z01) * log10Z_bounded
       endif
 
 * Determine fallback and remnant mass based on CO core mass
+* Model A in Maltsev+25
+      if (maltsev_model.eq.1)then
+*   Direct collapse:    if m1 <= mc <= m2 or mc >= m3
+*   NS:                 if mc < m1 or mns1 < mc < mns2
+*   Partial fallback:   maltsev_pf_prob fraction of the time otherwise
+         u_NS = ran3(idum1)
+         if ((mc.ge.M1.and.mc.le.M2).or.(mc.ge.M3)) then
+            fallback = 1.0d0
+            mt = mc_tot
+         elseif (mc.lt.M1).or.(mc.gt.M1ns.and.mc.lt.M2ns) then
+            fallback = 0.0d0
+            mt = M_NS
+         elseif (mc.gt.M2.and.mc.lt.M1ns.and.u_NS.lt.maltsev_pf_prob) then
+* Take linear relation between NS and BH
+            if (maltsev_fallback.eq.-1) then
+               fallback = (mc-M2)/(M1ns-M2)
+               mt = (mc_tot - M_NS) * fallback + M_NS
+* Fixed fallback fraction for all CCSNe
+            else
+               fallback = maltsev_fallback
+               mt = (mc_tot - M_NS) * fallback + M_NS
+            endif
+         elseif (mc.gt.M2ns.and.mc.lt.M3.and.u_NS.lt.maltsev_pf_prob) then
+* Take linear relation between NS and BH
+            if (maltsev_fallback.eq.-1) then
+               fallback = (mc-M2ns)/(M3-M2ns)
+               mt = (mc_tot - M_NS) * fallback + M_NS
+* Fixed fallback fraction for all CCSNe
+            else
+               fallback = maltsev_fallback
+               mt = (mc_tot - M_NS) * fallback + M_NS
+         else
+            fallback = 0.0d0
+            mt = M_NS
+         endif
+* Model B in Maltsev+25
+      elseif (maltsev_model.eq.2)then
 *   Direct collapse:    if m1 <= mc <= m2 or mc >= m3
 *   Partial fallback:   maltsev_pf_prob fraction of the time if m2 < mc < m3
 *   NS:                 otherwise
-      u_NS = ran3(idum1)
-      if ((mc.ge.M1.and.mc.le.M2).or.(mc.ge.M3)) then
-         fallback = 1.0d0
-         mt = mc_tot
-      elseif (mc.gt.M2.and.mc.lt.M3.and.u_NS.lt.maltsev_pf_prob) then
+         u_NS = ran3(idum1)
+         if ((mc.ge.M1.and.mc.le.M2).or.(mc.ge.M3)) then
+            fallback = 1.0d0
+            mt = mc_tot
+         elseif (mc.gt.M2.and.mc.lt.M3.and.u_NS.lt.maltsev_pf_prob) then
 * Take linear relation from Ugolini+25
-         if (maltsev_fallback.eq.-1) then
-            fallback = 0.06d0*mc - 0.03d0
-            mt = fallback*mt
+            if (maltsev_fallback.eq.-1) then
+               fallback = 0.06d0*mc - 0.03d0
+               mt = fallback*mt
 * Fixed fallback fraction for all CCSNe
+            else
+               fallback = maltsev_fallback
+               mt = (mc_tot - M_NS) * fallback + M_NS
+            endif
          else
-            fallback = maltsev_fallback
-            mt = (mc_tot - M_NS) * fallback + M_NS
+            fallback = 0.0d0
+            mt = M_NS
          endif
-      else
-         fallback = 0.0d0
-         mt = M_NS
       endif
-
+   
       return
       end
 

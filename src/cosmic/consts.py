@@ -45,7 +45,7 @@ GROUPED_SETTINGS = {
     "ceflags": ["ce2stageflag", "ceflag", "cekickflag", "cemergeflag", "cehestarflag", "ussn"],
     "flags": [
         "tflag", "ifflag", "wdflag", "rtmsflag", "bhflag", "remnantflag",
-        "maltsev_mode", "grflag", "bhms_coll_flag", "wd_mass_lim", "aic",
+        "maltsev_extrapol", "maltsev_model", "grflag", "bhms_coll_flag", "wd_mass_lim", "aic",
         "bdecayfac", "windflag", "qcflag", "eddlimflag", "bhspinflag",
         "rejuvflag", "htpmb", "ST_cr", "ST_tide",
     ],

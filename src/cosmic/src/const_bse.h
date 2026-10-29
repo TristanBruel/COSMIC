@@ -10,11 +10,12 @@
       INTEGER tflag,ifflag,remnantflag,wdflag,bhflag,windflag,qcflag
       INTEGER eddlimflag,bhspinflag,aic,rejuvflag,rtmsflag
       INTEGER htpmb,ST_cr,ST_tide,bdecayfac,grflag,bhms_coll_flag
-      INTEGER wd_mass_lim,maltsev_mode
+      INTEGER wd_mass_lim,maltsev_extrapol,maltsev_model
       COMMON /FLAGS/ tflag,ifflag,remnantflag,wdflag,bhflag,windflag,
      &               qcflag,eddlimflag,bhspinflag,aic,rejuvflag,
      &               htpmb,ST_cr,ST_tide,bdecayfac,grflag,
-     &               bhms_coll_flag,wd_mass_lim,rtmsflag,maltsev_mode
+     &               bhms_coll_flag,wd_mass_lim,rtmsflag,maltsev_extrapol,
+     &               maltsev_model
 
       REAL*8 don_lim,acc_lim(2),Mbh_initial,smt_periastron_check
       COMMON /MTVARS/ don_lim,acc_lim,Mbh_initial,smt_periastron_check
